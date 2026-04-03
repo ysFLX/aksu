@@ -84,7 +84,7 @@ function VehicleHero({ image }: { image?: string }) {
       <div className="relative h-[240px] overflow-hidden">
         <Image src={image} alt="" aria-hidden fill className="scale-110 object-cover object-center blur-xl opacity-25" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(247,240,220,0.18),rgba(247,240,220,0.52))]" />
-        <Image src={image} alt="Arac gorseli" fill className="object-contain object-center p-4" />
+        <Image src={image} alt="Arac gorseli" fill className="object-cover object-center" />
       </div>
     </div>
   );
