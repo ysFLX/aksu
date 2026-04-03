@@ -124,7 +124,7 @@ async function collectListingDetail(browser, listing) {
 async function main() {
   const userDataDir = path.join(process.cwd(), ".playwright", "sahibinden-profile");
   const browser = await chromium.launchPersistentContext(userDataDir, {
-    channel: "chrome",
+    channel: "msedge",
     headless: false,
     viewport: { width: 1440, height: 1100 },
   });
