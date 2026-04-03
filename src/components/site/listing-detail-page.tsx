@@ -22,7 +22,7 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
   ];
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
+    <main className="mx-auto max-w-7xl overflow-x-hidden px-6 py-16 lg:px-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Button asChild variant="secondary">
           <Link href="/ilanlar">
@@ -31,12 +31,15 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
           </Link>
         </Button>
 
-        <Button asChild>
-          <Link href={vehicle.sourceUrl ?? "#"} target="_blank" rel="noreferrer">
+        <Link
+          href={vehicle.sourceUrl ?? "#"}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-w-[190px] items-center justify-center gap-2 rounded-full border border-white/15 bg-white px-7 py-3 text-base font-semibold text-neutral-950 shadow-[0_18px_50px_rgba(255,255,255,0.14)] transition duration-300 hover:-translate-y-0.5 hover:bg-white"
+        >
             Sahibinden Ilani
             <ExternalLink className="h-4 w-4" />
-          </Link>
-        </Button>
+        </Link>
       </div>
 
       <section className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
