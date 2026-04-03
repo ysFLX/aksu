@@ -76,19 +76,19 @@ function CarDiagram({ expertise }: { expertise: VehicleExpertise }) {
       <rect x="145" y="382" width="24" height="10" rx="5" fill={cut} />
       <rect x="191" y="382" width="24" height="10" rx="5" fill={cut} />
 
-      <circle cx="88" cy="148" r="20" fill={bodyBase} />
-      <circle cx="272" cy="148" r="20" fill={bodyBase} />
-      <circle cx="88" cy="322" r="20" fill={bodyBase} />
-      <circle cx="272" cy="322" r="20" fill={bodyBase} />
+      <circle cx="96" cy="148" r="20" fill={bodyBase} stroke={cut} strokeWidth="5" />
+      <circle cx="264" cy="148" r="20" fill={bodyBase} stroke={cut} strokeWidth="5" />
+      <circle cx="96" cy="322" r="20" fill={bodyBase} stroke={cut} strokeWidth="5" />
+      <circle cx="264" cy="322" r="20" fill={bodyBase} stroke={cut} strokeWidth="5" />
 
-      <path d="M96 98L114 88L128 108V188L114 194L96 188V98Z" fill={fill("leftFrontFender")} />
-      <path d="M246 88L264 98V188L246 194L232 188V108L246 88Z" fill={fill("rightFrontFender")} />
-      <path d="M96 192L114 198L128 232L114 238L96 234V192Z" fill={fill("leftFrontDoor")} />
-      <path d="M246 198L264 192V234L246 238L232 232V198Z" fill={fill("rightFrontDoor")} />
-      <path d="M96 236L114 242L128 336L114 346L96 340V236Z" fill={fill("leftRearDoor")} />
-      <path d="M246 242L264 236V340L246 346L232 336V242Z" fill={fill("rightRearDoor")} />
-      <path d="M114 88L130 106V352L114 342Z" fill={fill("leftRearFender")} />
-      <path d="M230 106L246 88V342L230 352Z" fill={fill("rightRearFender")} />
+      <path d="M94 100L112 94L122 108L126 182L108 198L94 188V100Z" fill={fill("leftFrontFender")} />
+      <path d="M266 100L248 94L238 108L234 182L252 198L266 188V100Z" fill={fill("rightFrontFender")} />
+      <path d="M94 190L108 198L148 208L148 236L108 248L94 240V190Z" fill={fill("leftFrontDoor")} />
+      <path d="M266 190L252 198L212 208L212 236L252 248L266 240V190Z" fill={fill("rightFrontDoor")} />
+      <path d="M94 242L108 250L148 240L148 304L108 346L94 338V242Z" fill={fill("leftRearDoor")} />
+      <path d="M266 242L252 250L212 240L212 304L252 346L266 338V242Z" fill={fill("rightRearDoor")} />
+      <path d="M112 94L132 110L148 176L148 202L126 196L112 186V94Z" fill={fill("leftRearFender")} />
+      <path d="M248 94L228 110L212 176L212 202L234 196L248 186V94Z" fill={fill("rightRearFender")} />
 
       <path
         d="M158 92C165 82 195 82 202 92L210 126L214 210L210 314L202 352C195 362 165 362 158 352L150 314L146 210L150 126L158 92Z"
