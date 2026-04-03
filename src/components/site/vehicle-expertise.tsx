@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { ExpertiseStatus, VehicleExpertise } from "@/types/inventory";
 
 const statusStyles: Record<
@@ -34,7 +36,7 @@ const parts: Array<{
   key: keyof VehicleExpertise;
   label: string;
   description: string;
-  shape: (fill: string) => JSX.Element;
+  shape: (fill: string) => ReactNode;
 }> = [
   {
     key: "hood",
