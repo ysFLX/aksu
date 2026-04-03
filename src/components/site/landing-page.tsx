@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { companyStats, services, siteConfig, trustPoints } from "@/lib/site-config";
-import { formatCurrency, formatKm } from "@/lib/utils";
+import { formatCurrency, formatKm, formatVehicleMetaValue } from "@/lib/utils";
 import type { Vehicle } from "@/types/inventory";
 
 type LandingPageProps = {
@@ -90,13 +90,15 @@ export function LandingPage({ vehicles }: LandingPageProps) {
                     <h3 className="mt-3 text-3xl font-semibold">{vehicles[0]?.title}</h3>
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-white/85">
-                    {vehicles[0]?.year}
+                    {formatVehicleMetaValue(vehicles[0]?.year)}
                   </div>
                 </div>
                 <div className="mt-5 flex flex-wrap gap-3 text-sm text-white/80">
                   <span className="rounded-full bg-white/10 px-4 py-2">{vehicles[0]?.transmission}</span>
                   <span className="rounded-full bg-white/10 px-4 py-2">{vehicles[0]?.fuel}</span>
-                  <span className="rounded-full bg-white/10 px-4 py-2">{formatKm(vehicles[0]?.km ?? 0)} km</span>
+                  <span className="rounded-full bg-white/10 px-4 py-2">
+                    {vehicles[0]?.km ? `${formatKm(vehicles[0].km)} km` : "KM Bilinmiyor"}
+                  </span>
                 </div>
                 <div className="mt-6 flex items-center justify-between gap-4">
                   <p className="text-3xl font-semibold text-amber-200">
@@ -197,7 +199,9 @@ export function LandingPage({ vehicles }: LandingPageProps) {
                       {vehicle.location}
                     </div>
                   </div>
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70">{vehicle.year}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70">
+                    {formatVehicleMetaValue(vehicle.year)}
+                  </span>
                 </div>
 
                 <div className="mt-5 grid grid-cols-3 gap-3 text-sm text-white/72">
@@ -211,7 +215,9 @@ export function LandingPage({ vehicles }: LandingPageProps) {
                   </div>
                   <div className="rounded-2xl bg-black/20 p-3">
                     <p className="text-white/45">KM</p>
-                    <p className="mt-2 font-medium text-white">{formatKm(vehicle.km)}</p>
+                    <p className="mt-2 font-medium text-white">
+                      {vehicle.km ? formatKm(vehicle.km) : "Bilinmiyor"}
+                    </p>
                   </div>
                 </div>
 

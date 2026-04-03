@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { demoVehicles } from "@/lib/data/inventory";
+import { sahibindenStoreSnapshot } from "@/lib/data/sahibinden-store";
 import type { Vehicle } from "@/types/inventory";
 
 const remoteVehicleSchema = z.object({
@@ -49,9 +50,12 @@ function normalizeVehicle(input: z.infer<typeof remoteVehicleSchema>): Vehicle {
 
 export async function getSahibindenVehicles(): Promise<Vehicle[]> {
   const feedUrl = process.env.SAHIBINDEN_FEED_URL;
+  const storeUrl = process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL;
+  const storeSnapshot =
+    storeUrl?.includes("gorkemoto.sahibinden.com") ? sahibindenStoreSnapshot : demoVehicles;
 
   if (!feedUrl) {
-    return demoVehicles;
+    return storeSnapshot;
   }
 
   try {
@@ -63,18 +67,18 @@ export async function getSahibindenVehicles(): Promise<Vehicle[]> {
     });
 
     if (!response.ok) {
-      return demoVehicles;
+      return storeSnapshot;
     }
 
     const json = await response.json();
     const parsed = z.array(remoteVehicleSchema).safeParse(json);
 
     if (!parsed.success) {
-      return demoVehicles;
+      return storeSnapshot;
     }
 
     return parsed.data.map(normalizeVehicle);
   } catch {
-    return demoVehicles;
+    return storeSnapshot;
   }
 }

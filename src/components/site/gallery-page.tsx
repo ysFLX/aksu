@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Fuel, Gauge, MapPin, Settings2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { formatCurrency, formatKm } from "@/lib/utils";
+import { formatCurrency, formatKm, formatVehicleMetaValue } from "@/lib/utils";
 import type { Vehicle } from "@/types/inventory";
 
 type GalleryPageProps = {
@@ -41,15 +41,17 @@ export function GalleryPage({ vehicles }: GalleryPageProps) {
             </div>
 
             <div className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-semibold">{vehicle.title}</h2>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-2xl font-semibold">{vehicle.title}</h2>
                   <p className="mt-2 flex items-center gap-2 text-sm text-white/60">
                     <MapPin className="h-4 w-4" />
                     {vehicle.location}
                   </p>
                 </div>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70">{vehicle.year}</span>
+                <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70">
+                  {formatVehicleMetaValue(vehicle.year)}
+                </span>
               </div>
 
               <div className="mt-6 grid grid-cols-3 gap-3 text-sm">
@@ -63,7 +65,7 @@ export function GalleryPage({ vehicles }: GalleryPageProps) {
                 </div>
                 <div className="rounded-2xl bg-black/20 p-3 text-white/72">
                   <Gauge className="h-4 w-4 text-amber-200" />
-                  <p className="mt-3">{formatKm(vehicle.km)} km</p>
+                  <p className="mt-3">{vehicle.km ? `${formatKm(vehicle.km)} km` : "Bilinmiyor"}</p>
                 </div>
               </div>
 
@@ -82,4 +84,3 @@ export function GalleryPage({ vehicles }: GalleryPageProps) {
     </main>
   );
 }
-

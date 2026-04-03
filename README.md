@@ -29,8 +29,12 @@ Premium galerici vitrini ve ilan akisi icin kurulan Next.js tabanli altyapi.
 `src/lib/inventory/providers/sahibinden.ts` dosyasi entegrasyon icin adapter gorevi gorur.
 Su an:
 
-- ornek bir feed URL'si varsa oradan veri cekmeyi dener
-- uygun veri yoksa lokal demo araclariyla devam eder
+- `SAHIBINDEN_FEED_URL` varsa JSON feed okumayi dener
+- `NEXT_PUBLIC_SAHIBINDEN_STORE_URL` olarak `https://gorkemoto.sahibinden.com/` verilirse mevcut magaza ilanlarinin snapshot verisini kullanir
+- dogrudan sahibinden HTML cekimi Cloudflare tarafinda engellenebildigi icin tamamen canli scraping her ortamda garantili degildir
 
-Bir sonraki adimda bu katmani, arkadasinin kullandigi ilan yayim akisi neyse ona gore netlestirip canliya baglayabiliriz.
+Bu nedenle en saglam cozum:
 
+1. resmi/ozel bir feed varsa onu kullanmak
+2. yoksa periyodik snapshot yenilemek
+3. ileri asamada browser otomasyonu veya harici ingest servisi eklemek

@@ -17,3 +17,10 @@ export function formatKm(value: number) {
   return new Intl.NumberFormat("tr-TR").format(value);
 }
 
+export function formatVehicleMetaValue(value?: number | string) {
+  if (value === undefined || value === null || value === "") {
+    return "Bilinmiyor";
+  }
+
+  return String(value);
+}

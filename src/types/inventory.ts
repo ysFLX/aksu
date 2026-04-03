@@ -15,10 +15,10 @@ export type Vehicle = {
   title: string;
   brand: string;
   model: string;
-  year: number;
+  year?: number;
   price: number;
   currency: "TRY";
-  km: number;
+  km?: number;
   fuel: string;
   transmission: string;
   location: string;
@@ -39,4 +39,3 @@ export type ServiceItem = {
   title: string;
   description: string;
 };
-
