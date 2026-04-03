@@ -1,6 +1,32 @@
+import generatedStore from "@/lib/data/generated/sahibinden-store.generated.json";
 import type { Vehicle, VehicleTag } from "@/types/inventory";
 
 const DEFAULT_SAHIBINDEN_STORE_URL = "https://gorkemoto.sahibinden.com/";
+
+type SeedVehicleInput = {
+  id: string;
+  title: string;
+  color: string;
+  price: number;
+  publishedAt: string;
+};
+
+type SyncedVehicleRecord = {
+  id: string;
+  title?: string;
+  price?: number;
+  image?: string;
+  gallery?: string[];
+  sourceUrl?: string;
+  location?: string;
+  fuel?: string;
+  transmission?: string;
+  km?: number;
+  year?: number;
+  brand?: string;
+  model?: string;
+  description?: string;
+};
 
 const brandImages: Record<string, string> = {
   Fiat:
@@ -89,38 +115,35 @@ function inferYear(title: string) {
   return match ? Number(match[1]) : undefined;
 }
 
-function toVehicle(input: {
-  id: string;
-  title: string;
-  color: string;
-  price: number;
-  publishedAt: string;
-}) : Vehicle {
-  const brand = inferBrand(input.title);
-  const image = brandImages[brand] ?? brandImages.BMW;
+function toVehicle(input: SeedVehicleInput, synced?: SyncedVehicleRecord): Vehicle {
+  const resolvedTitle = synced?.title ?? input.title;
+  const brand = synced?.brand ?? inferBrand(resolvedTitle);
+  const fallbackImage = brandImages[brand] ?? brandImages.BMW;
+  const image = synced?.image ?? fallbackImage;
+  const gallery = synced?.gallery?.length ? synced.gallery : [image];
 
   return {
     id: input.id,
-    slug: slugify(input.title),
-    title: input.title,
+    slug: slugify(resolvedTitle),
+    title: resolvedTitle,
     brand,
-    model: inferModel(input.title),
-    year: inferYear(input.title),
-    price: input.price,
+    model: synced?.model ?? inferModel(resolvedTitle),
+    year: synced?.year ?? inferYear(resolvedTitle),
+    price: synced?.price ?? input.price,
     currency: "TRY",
-    km: inferKm(input.title),
-    fuel: inferFuel(input.title),
-    transmission: inferTransmission(input.title),
-    location: "Konya / Karatay",
+    km: synced?.km ?? inferKm(resolvedTitle),
+    fuel: synced?.fuel ?? inferFuel(resolvedTitle),
+    transmission: synced?.transmission ?? inferTransmission(resolvedTitle),
+    location: synced?.location ?? "Konya / Karatay",
     image,
-    gallery: [image],
-    tags: inferTags(input.title),
+    gallery,
+    tags: inferTags(resolvedTitle),
     featured: ["64", "65", "66"].includes(input.id),
-    sourceUrl: process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? DEFAULT_SAHIBINDEN_STORE_URL,
+    sourceUrl: synced?.sourceUrl ?? process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? DEFAULT_SAHIBINDEN_STORE_URL,
   };
 }
 
-export const sahibindenStoreSnapshot: Vehicle[] = [
+const seedVehicles: SeedVehicleInput[] = [
   {
     id: "64",
     title: "Gorkem | Hatasiz Boyasiz! | Urban Egea Otomatik | Karta Taksit!",
@@ -191,4 +214,12 @@ export const sahibindenStoreSnapshot: Vehicle[] = [
     price: 1359000,
     publishedAt: "2025-12-07",
   },
-].map(toVehicle);
+];
+
+const syncedById = new Map(
+  (generatedStore as SyncedVehicleRecord[]).map((vehicle) => [vehicle.id, vehicle]),
+);
+
+export const sahibindenStoreSnapshot: Vehicle[] = seedVehicles.map((vehicle) =>
+  toVehicle(vehicle, syncedById.get(vehicle.id)),
+);

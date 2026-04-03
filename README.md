@@ -31,10 +31,22 @@ Su an:
 
 - `SAHIBINDEN_FEED_URL` varsa JSON feed okumayi dener
 - `NEXT_PUBLIC_SAHIBINDEN_STORE_URL` olarak `https://gorkemoto.sahibinden.com/` verilirse mevcut magaza ilanlarinin snapshot verisini kullanir
-- dogrudan sahibinden HTML cekimi Cloudflare tarafinda engellenebildigi icin tamamen canli scraping her ortamda garantili degildir
+- tarayici otomasyonuyla gercek ilan linkleri ve foto URL'leri `src/lib/data/generated/sahibinden-store.generated.json` dosyasina senkronlanabilir
+
+## Foto Senkronu
+
+Gercek sahibinden fotograflarini almak icin:
+
+1. `npm install`
+2. `npx playwright install chrome`
+3. `npm run sync:sahibinden`
+
+Bu script acilan Chrome penceresinde sahibinden magazasini gezer.
+Bot korumasi cikarsa dogrulamayi tarayicida tamamlayip terminalde Enter'a basin.
+Sync sonunda `src/lib/data/generated/sahibinden-store.generated.json` guncellenir ve site bu veriyi otomatik kullanir.
 
 Bu nedenle en saglam cozum:
 
 1. resmi/ozel bir feed varsa onu kullanmak
-2. yoksa periyodik snapshot yenilemek
-3. ileri asamada browser otomasyonu veya harici ingest servisi eklemek
+2. yoksa `npm run sync:sahibinden` ile periyodik gorsel snapshot yenilemek
+3. ileri asamada harici ingest servisi eklemek

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "sync:sahibinden": "node scripts/sync-sahibinden.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
@@ -29,8 +30,8 @@
     "eslint": "^9.25.1",
     "eslint-config-next": "^15.5.2",
     "postcss": "^8.5.6",
+    "playwright": "^1.55.0",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.8.3"
   }
 }
-
