@@ -16,7 +16,7 @@ export function VehicleGallery({ title, images, tags }: VehicleGalleryProps) {
   const [activeImage, setActiveImage] = useState(gallery[0]);
 
   return (
-    <div className="space-y-5">
+    <div className="max-w-full space-y-5 overflow-hidden">
       <div className="relative h-[520px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
         <Image src={activeImage} alt={title} fill className="object-cover" priority />
         <div className="absolute inset-x-6 bottom-6 flex flex-wrap gap-2">
@@ -31,22 +31,23 @@ export function VehicleGallery({ title, images, tags }: VehicleGalleryProps) {
         </div>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto pb-2">
-        {gallery.map((image, index) => (
-          <button
-            key={`${image}-${index}`}
-            type="button"
-            onClick={() => setActiveImage(image)}
-            className={cn(
-              "relative h-28 w-40 shrink-0 overflow-hidden rounded-[1.25rem] border border-white/10 bg-white/5 transition",
-              activeImage === image && "ring-2 ring-amber-200/80",
-            )}
-          >
-            <Image src={image} alt={`${title} ${index + 1}`} fill className="object-cover" />
-          </button>
-        ))}
+      <div className="w-full overflow-x-auto pb-2">
+        <div className="flex min-w-max gap-3">
+          {gallery.map((image, index) => (
+            <button
+              key={`${image}-${index}`}
+              type="button"
+              onClick={() => setActiveImage(image)}
+              className={cn(
+                "relative h-24 w-28 shrink-0 overflow-hidden rounded-[1.1rem] border border-white/10 bg-white/5 transition sm:h-28 sm:w-36",
+                activeImage === image && "ring-2 ring-amber-200/80",
+              )}
+            >
+              <Image src={image} alt={`${title} ${index + 1}`} fill className="object-cover" />
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
-
