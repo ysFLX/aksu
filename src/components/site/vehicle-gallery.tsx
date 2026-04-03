@@ -17,8 +17,8 @@ export function VehicleGallery({ title, images, tags }: VehicleGalleryProps) {
 
   return (
     <div className="max-w-full space-y-5 overflow-hidden">
-      <div className="relative h-[340px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 sm:h-[420px] xl:h-[520px]">
-        <Image src={activeImage} alt={title} fill className="object-cover" priority />
+      <div className="relative h-[340px] overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_rgba(255,255,255,0.03)_48%,_rgba(0,0,0,0.28)_100%)] sm:h-[420px] xl:h-[520px]">
+        <Image src={activeImage} alt={title} fill className="object-contain p-3 sm:p-4" priority />
         <div className="absolute inset-x-6 bottom-6 flex flex-wrap gap-2">
           {tags.map((tag) => (
             <span
@@ -31,20 +31,22 @@ export function VehicleGallery({ title, images, tags }: VehicleGalleryProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {gallery.map((image, index) => (
-          <button
-            key={`${image}-${index}`}
-            type="button"
-            onClick={() => setActiveImage(image)}
-            className={cn(
-              "relative aspect-[4/3] overflow-hidden rounded-[1.1rem] border border-white/10 bg-white/5 transition",
-              activeImage === image && "ring-2 ring-amber-200/80",
-            )}
-          >
-            <Image src={image} alt={`${title} ${index + 1}`} fill className="object-cover" />
-          </button>
-        ))}
+      <div className="max-w-full overflow-x-auto pb-2">
+        <div className="inline-grid grid-flow-col grid-rows-2 gap-3">
+          {gallery.map((image, index) => (
+            <button
+              key={`${image}-${index}`}
+              type="button"
+              onClick={() => setActiveImage(image)}
+              className={cn(
+                "relative h-20 w-24 overflow-hidden rounded-[1.1rem] border border-white/10 bg-white/5 transition sm:h-24 sm:w-28 md:h-24 md:w-32",
+                activeImage === image && "ring-2 ring-amber-200/80",
+              )}
+            >
+              <Image src={image} alt={`${title} ${index + 1}`} fill className="object-cover" />
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

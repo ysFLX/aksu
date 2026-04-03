@@ -58,33 +58,43 @@ function CarDiagram({ expertise }: { expertise: VehicleExpertise }) {
   const fill = (key: keyof VehicleExpertise) => statusStyles[expertise[key] as ExpertiseStatus].fill;
 
   return (
-    <svg viewBox="0 0 360 440" className="mx-auto h-auto w-full max-w-[360px]">
-      <rect x="160" y="18" width="18" height="16" rx="4" fill="#d8d1c5" />
-      <rect x="182" y="18" width="18" height="16" rx="4" fill="#d8d1c5" />
+    <svg viewBox="0 0 360 440" className="mx-auto h-auto w-full max-w-[290px] md:max-w-[330px]">
+      <g fill="#d8d1c5">
+        <rect x="159" y="18" width="18" height="16" rx="4" />
+        <rect x="183" y="18" width="18" height="16" rx="4" />
+        <rect x="159" y="406" width="18" height="16" rx="4" />
+        <rect x="183" y="406" width="18" height="16" rx="4" />
+        <circle cx="92" cy="136" r="28" />
+        <circle cx="268" cy="136" r="28" />
+        <circle cx="92" cy="304" r="28" />
+        <circle cx="268" cy="304" r="28" />
+      </g>
 
-      <rect x="145" y="42" width="70" height="28" rx="8" fill={fill("frontBumper")} />
-      <path d="M145 86C156 68 204 68 215 86L224 138C197 126 163 126 136 138L145 86Z" fill={fill("hood")} />
-      <path d="M138 146C154 135 206 135 222 146V292C206 304 154 304 138 292V146Z" fill={fill("roof")} />
-      <path d="M145 316C159 304 201 304 215 316L224 364C196 376 164 376 136 364L145 316Z" fill="#f2eee6" />
-      <rect x="145" y="378" width="70" height="28" rx="8" fill={fill("rearBumper")} />
-      <rect x="160" y="410" width="18" height="16" rx="4" fill="#d8d1c5" />
-      <rect x="182" y="410" width="18" height="16" rx="4" fill="#d8d1c5" />
+      <rect x="140" y="40" width="80" height="28" rx="10" fill={fill("frontBumper")} />
+      <path d="M145 88C154 72 206 72 215 88L224 136C196 126 164 126 136 136L145 88Z" fill={fill("hood")} />
+      <path d="M136 145C148 134 212 134 224 145V292C212 304 148 304 136 292V145Z" fill={fill("roof")} />
+      <path d="M145 313C154 328 206 328 215 313L224 360C196 370 164 370 136 360L145 313Z" fill="#efe6d2" />
+      <rect x="140" y="372" width="80" height="28" rx="10" fill={fill("rearBumper")} />
 
-      <circle cx="86" cy="142" r="28" fill="#d8d1c5" />
-      <circle cx="86" cy="298" r="28" fill="#d8d1c5" />
-      <circle cx="274" cy="142" r="28" fill="#d8d1c5" />
-      <circle cx="274" cy="298" r="28" fill="#d8d1c5" />
+      <path d="M118 92L136 108V174L114 164L106 104L118 92Z" fill={fill("leftFrontFender")} />
+      <path d="M242 108L260 92L272 104V164L246 174V108Z" fill={fill("rightFrontFender")} />
 
-      <path d="M114 84L136 106V178L114 168L104 102L114 84Z" fill={fill("leftFrontFender")} />
-      <path d="M246 106L268 84L278 102V168L246 178V106Z" fill={fill("rightFrontFender")} />
-      <path d="M108 176L136 186V236L108 226V176Z" fill={fill("leftFrontDoor")} />
-      <path d="M252 186L280 176V226L252 236V186Z" fill={fill("rightFrontDoor")} />
-      <path d="M108 230L136 240V292L108 274V230Z" fill={fill("leftRearDoor")} />
-      <path d="M252 240L280 230V274L252 292V240Z" fill={fill("rightRearDoor")} />
-      <path d="M114 282L136 260V332L114 354L104 336V292L114 282Z" fill={fill("leftRearFender")} />
-      <path d="M246 260L268 282L278 292V336L268 354L246 332V260Z" fill={fill("rightRearFender")} />
+      <path d="M110 176L136 186V228L110 220V176Z" fill={fill("leftFrontDoor")} />
+      <path d="M250 186L276 176V220L250 228V186Z" fill={fill("rightFrontDoor")} />
 
-      <path d="M136 106C151 84 209 84 224 106L236 144V294L224 336C209 358 151 358 136 336L124 294V144L136 106Z" fill="none" stroke="#d8d1c5" strokeWidth="7" />
+      <path d="M110 224L136 232V276L110 286V224Z" fill={fill("leftRearDoor")} />
+      <path d="M250 232L276 224V286L250 276V232Z" fill={fill("rightRearDoor")} />
+
+      <path d="M118 268L136 250V316L118 348L106 336V284L118 268Z" fill={fill("leftRearFender")} />
+      <path d="M242 250L260 268L272 284V336L260 348L242 316V250Z" fill={fill("rightRearFender")} />
+
+      <path
+        d="M136 108C148 82 212 82 224 108L236 150V288L224 332C212 356 148 356 136 332L124 288V150L136 108Z"
+        fill="none"
+        stroke="#d8d1c5"
+        strokeWidth="8"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
