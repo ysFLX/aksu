@@ -11,16 +11,16 @@ export function SiteFooter() {
           <p className="mt-3 max-w-sm leading-7">{siteConfig.description}</p>
         </div>
         <div>
-          <p className="text-white">Menu</p>
+          <p className="text-white">Menü</p>
           <div className="mt-4 grid gap-2">
             <Link href="/">Anasayfa</Link>
-            <Link href="/hakkimizda">Hakkimizda</Link>
+            <Link href="/hakkimizda">Hakkımızda</Link>
             <Link href="/galeri">Galeri</Link>
-            <Link href="/iletisim">Iletisim</Link>
+            <Link href="/iletisim">İletişim</Link>
           </div>
         </div>
         <div>
-          <p className="text-white">Iletisim</p>
+          <p className="text-white">İletişim</p>
           <div className="mt-4 grid gap-2">
             <a href={`tel:${siteConfig.phone}`}>{siteConfig.phone}</a>
             <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>

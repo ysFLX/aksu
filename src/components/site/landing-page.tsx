@@ -115,7 +115,7 @@ export function LandingPage({ vehicles }: LandingPageProps) {
       <section className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <motion.div {...fadeUp} className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Hakkimizda</p>
+            <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Hakkımızda</p>
             <h2 className="mt-4 max-w-md text-4xl font-semibold leading-tight">
               Arac satmaktan once guven olusturan bir marka dili kuruyoruz.
             </h2>

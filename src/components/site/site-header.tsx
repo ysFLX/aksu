@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
   { href: "/", label: "Anasayfa" },
-  { href: "/hakkimizda", label: "Hakkimizda" },
+  { href: "/hakkimizda", label: "Hakkımızda" },
   { href: "/galeri", label: "Galeri" },
-  { href: "/iletisim", label: "Iletisim" },
+  { href: "/iletisim", label: "İletişim" },
 ];
 
 export function SiteHeader() {

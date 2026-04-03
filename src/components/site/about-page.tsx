@@ -7,7 +7,7 @@ export function AboutPage() {
     <main className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
       <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
         <div>
-          <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Hakkimizda</p>
+          <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Hakkımızda</p>
           <h1 className="mt-4 max-w-2xl text-5xl font-semibold leading-tight">
             Guven, seffaflik ve premium sunum anlayisini ayni cizgide bulusturuyoruz.
           </h1>
