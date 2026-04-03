@@ -1,67 +1,67 @@
 import type { CompanyStat, ServiceItem } from "@/types/inventory";
 
 export const siteConfig = {
-  name: process.env.NEXT_PUBLIC_COMPANY_NAME ?? "Gorkemoto",
-  title: "Premium Galeri Deneyimi",
+  name: process.env.NEXT_PUBLIC_COMPANY_NAME ?? "Görkem Otomotiv",
+  title: "",
   description:
-    "Modern tasarim, guven veren iletisim ve ozenle secilmis arac portfoyu ile yeni nesil galerici vitrini.",
+    "Modern tasarım, güven veren iletişim ve özenle seçilmiş arac portfoyu ile yeni nesil galerici vitrini.",
   phone: "+90 532 000 00 00",
   whatsapp: "905320000000",
   email: "info@gorkemoto.com",
   address: "Istanbul / Basaksehir Oto Ticaret Merkezi",
   hero: {
     eyebrow: "Yeni Nesil Galeri Vitrini",
-    title: "Guvenden Beslenen, Tasarimla Fark Yaratan Bir Otomotiv Deneyimi",
+    title: "Güvenden Beslenen, Tasarımla Fark Yaratan Bir Otomotiv Deneyimi",
     description:
-      "Arac secmekten fazlasini sunuyoruz. Her ilanda net bilgi, her gorusmede samimiyet ve her teslimatta premium bir deneyim.",
+      "Araç seçmekten fazlasını sunuyoruz. Her ilanda net bilgi, her görüşmede samimiyet ve her teslimatta premium bir deneyim.",
   },
 };
 
 export const companyStats: CompanyStat[] = [
   {
     value: "12+",
-    label: "Yillik Tecrube",
-    detail: "Sektoru ve musteri beklentisini yakindan bilen ekip.",
+    label: "Yıllık Tecrube",
+    detail: "Sektörü ve müşteri beklentisini yakından bilen ekip.",
   },
   {
     value: "350+",
     label: "Mutlu Teslimat",
-    detail: "Referansla buyuyen guven odakli satis yapisi.",
+    detail: "Referansla büyüyen güven odaklı satış yapısı.",
   },
   {
     value: "24 saat",
-    label: "Hizli Donus",
-    detail: "Ekspertiz, finansman ve arac bilgileri icin hizli destek.",
+    label: "Hızlı Dönüş",
+    detail: "Ekspertiz, finansman ve arac bilgileri için hızlı destek.",
   },
 ];
 
 export const services: ServiceItem[] = [
   {
-    title: "Arac Alim ve Satis Danismanligi",
+    title: "Araç Alım ve Satış Danışmanlığı",
     description:
-      "Musterinin ihtiyacina gore filtrelenmis, net ve yonlendirici bir arac secim sureci sunuyoruz.",
+      "Müşterinin ihtiyaçlarına göre filtrelenmüş, net ve yönlendirici bir araç seçimi süreci sunuyoruz.",
   },
   {
-    title: "Takas ve Degerleme",
+    title: "Takas ve Değerleme",
     description:
       "Mevcut araciniz icin hizli teklif ve piyasa dengelerine uygun degerlendirme hizmeti.",
   },
   {
     title: "Finansman Yonu",
     description:
-      "Kredi ve odeme senaryolarini sade anlatarak karar surecini kolaylastiriyoruz.",
+      "Kredi ve ödeme senaryolarını sade anlatarak karar sürecini kolaylaştıryoruz.",
   },
   {
-    title: "Ekspertiz ve Seffaf Bilgilendirme",
+    title: "Ekspertiz ve Şeffaf Bilgilendirme",
     description:
-      "Ilanlarda ve showroom gorusmelerinde arac gecmisi, durum ve onemli detaylar acikca paylasilir.",
+      "İlanlarda ve showroom görüşmelerinde arac geçmişi, durum ve önemli detaylar açıkça paylaşıılır.",
   },
 ];
 
 export const trustPoints = [
-  "Her arac icin detayli bilgi, net ilan dili ve seffaf iletisim",
-  "Sahibinden akisini merkez vitrinde de gosterebilen altyapi",
-  "Mobilde de premium his veren modern arayuz",
-  "Ileride randevu, CRM ve teklif formu ile genislemeye uygun mimari",
+  "Her araç için detaylı bilgi, net ilan dili ve şeffaf iletişim",
+  "Sahibinden akışını merkez vitrinde de gösterebilen altyapı",
+  "Mobilde de premium his veren modern arayüz",
+  "İleride randevu, CRM ve teklif formu ile genişlemeye uygun mimari",
 ];
 
