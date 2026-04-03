@@ -1,5 +1,7 @@
 import type { Vehicle, VehicleTag } from "@/types/inventory";
 
+const DEFAULT_SAHIBINDEN_STORE_URL = "https://gorkemoto.sahibinden.com/";
+
 const brandImages: Record<string, string> = {
   Fiat:
     "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80",
@@ -114,7 +116,7 @@ function toVehicle(input: {
     gallery: [image],
     tags: inferTags(input.title),
     featured: ["64", "65", "66"].includes(input.id),
-    sourceUrl: process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? "https://gorkemoto.sahibinden.com/",
+    sourceUrl: process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? DEFAULT_SAHIBINDEN_STORE_URL,
   };
 }
 

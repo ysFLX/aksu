@@ -4,6 +4,8 @@ import { demoVehicles } from "@/lib/data/inventory";
 import { sahibindenStoreSnapshot } from "@/lib/data/sahibinden-store";
 import type { Vehicle } from "@/types/inventory";
 
+const DEFAULT_SAHIBINDEN_STORE_URL = "https://gorkemoto.sahibinden.com/";
+
 const remoteVehicleSchema = z.object({
   id: z.union([z.string(), z.number()]),
   title: z.string(),
@@ -50,7 +52,7 @@ function normalizeVehicle(input: z.infer<typeof remoteVehicleSchema>): Vehicle {
 
 export async function getSahibindenVehicles(): Promise<Vehicle[]> {
   const feedUrl = process.env.SAHIBINDEN_FEED_URL;
-  const storeUrl = process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL;
+  const storeUrl = process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? DEFAULT_SAHIBINDEN_STORE_URL;
   const storeSnapshot =
     storeUrl?.includes("gorkemoto.sahibinden.com") ? sahibindenStoreSnapshot : demoVehicles;
 
