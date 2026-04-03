@@ -27,6 +27,25 @@ export type Vehicle = {
   tags: VehicleTag[];
   featured?: boolean;
   sourceUrl?: string;
+  expertise?: VehicleExpertise;
+};
+
+export type ExpertiseStatus = "Orijinal" | "Boyalı" | "Değişen" | "Lokal Boyalı";
+
+export type VehicleExpertise = {
+  frontBumper: ExpertiseStatus;
+  hood: ExpertiseStatus;
+  roof: ExpertiseStatus;
+  rearBumper: ExpertiseStatus;
+  leftFrontFender: ExpertiseStatus;
+  leftFrontDoor: ExpertiseStatus;
+  leftRearDoor: ExpertiseStatus;
+  leftRearFender: ExpertiseStatus;
+  rightFrontFender: ExpertiseStatus;
+  rightFrontDoor: ExpertiseStatus;
+  rightRearDoor: ExpertiseStatus;
+  rightRearFender: ExpertiseStatus;
+  notes?: string;
 };
 
 export type CompanyStat = {

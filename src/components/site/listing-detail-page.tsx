@@ -1,8 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, CalendarDays, ExternalLink, Fuel, Gauge, MapPin, Settings2, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { VehicleExpertise } from "@/components/site/vehicle-expertise";
+import { VehicleGallery } from "@/components/site/vehicle-gallery";
 import { formatCurrency, formatKm, formatVehicleMetaValue } from "@/lib/utils";
 import type { Vehicle } from "@/types/inventory";
 
@@ -40,30 +41,7 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
 
       <section className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
-          <div className="relative h-[480px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
-            <Image src={vehicle.image} alt={vehicle.title} fill className="object-cover" priority />
-            <div className="absolute inset-x-6 bottom-6 flex flex-wrap gap-2">
-              {vehicle.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-white/10 bg-black/45 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/85 backdrop-blur"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {vehicle.gallery.map((image, index) => (
-              <div
-                key={`${vehicle.id}-${index}`}
-                className="relative h-52 overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/5"
-              >
-                <Image src={image} alt={`${vehicle.title} ${index + 1}`} fill className="object-cover" />
-              </div>
-            ))}
-          </div>
+          <VehicleGallery title={vehicle.title} images={vehicle.gallery} tags={vehicle.tags} />
         </div>
 
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
@@ -100,7 +78,8 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
           </div>
         </div>
       </section>
+
+      <VehicleExpertise expertise={vehicle.expertise} />
     </main>
   );
 }
-

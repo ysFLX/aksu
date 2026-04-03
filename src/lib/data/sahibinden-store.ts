@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 
-import type { Vehicle, VehicleTag } from "@/types/inventory";
+import type { Vehicle, VehicleExpertise, VehicleTag } from "@/types/inventory";
 
 const DEFAULT_SAHIBINDEN_STORE_URL = "https://gorkemoto.sahibinden.com/";
 const LOCAL_CAR_ROOT = path.join(process.cwd(), "src", "arabalar");
@@ -20,6 +20,7 @@ type LocalVehicleSeed = {
   location: string;
   tags: VehicleTag[];
   featured?: boolean;
+  expertise: VehicleExpertise;
 };
 
 function slugify(value: string) {
@@ -57,6 +58,21 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     location: "Konya / Karatay",
     tags: ["Firsat", "Benzin", "Otomatik"],
     featured: true,
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+      notes: "Ekspertiz alani daha sonra guncellenebilir.",
+    },
   },
   {
     id: "65",
@@ -72,6 +88,21 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     location: "Konya / Karatay",
     tags: ["Firsat", "Benzin", "Hatcback"],
     featured: true,
+    expertise: {
+      frontBumper: "Boyalı",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Lokal Boyalı",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+      notes: "Ornek ekspertiz verisi.",
+    },
   },
   {
     id: "66",
@@ -87,6 +118,21 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     location: "Konya / Karatay",
     tags: ["Firsat", "Benzin", "Sedan"],
     featured: true,
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Lokal Boyalı",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+      notes: "Ornek ekspertiz verisi.",
+    },
   },
   {
     id: "67",
@@ -101,6 +147,20 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     transmission: "Otomatik",
     location: "Konya / Karatay",
     tags: ["Firsat", "Benzin", "Otomatik"],
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+    },
   },
   {
     id: "68",
@@ -115,6 +175,20 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     transmission: "Otomatik",
     location: "Konya / Karatay",
     tags: ["Firsat", "Benzin", "Sedan"],
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Lokal Boyalı",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+    },
   },
   {
     id: "69",
@@ -129,6 +203,20 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     transmission: "Otomatik",
     location: "Konya / Karatay",
     tags: ["Firsat", "Dizel", "Sedan"],
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Boyalı",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+    },
   },
   {
     id: "70",
@@ -143,6 +231,20 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     transmission: "Otomatik",
     location: "Konya / Karatay",
     tags: ["Firsat", "Dizel", "Hatcback"],
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Boyalı",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+    },
   },
   {
     id: "71",
@@ -157,6 +259,20 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     transmission: "Manuel",
     location: "Konya / Karatay",
     tags: ["Firsat", "Dizel"],
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+    },
   },
   {
     id: "72",
@@ -171,6 +287,20 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     transmission: "Otomatik",
     location: "Konya / Karatay",
     tags: ["Firsat", "Benzin", "Sedan"],
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+    },
   },
   {
     id: "73",
@@ -185,6 +315,20 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     transmission: "Otomatik",
     location: "Konya / Karatay",
     tags: ["Firsat", "Dizel", "Sedan"],
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+    },
   },
   {
     id: "74",
@@ -199,6 +343,20 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     transmission: "Otomatik",
     location: "Konya / Karatay",
     tags: ["Firsat", "Dizel", "Sedan"],
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+    },
   },
   {
     id: "75",
@@ -213,6 +371,20 @@ const localVehicleSeeds: LocalVehicleSeed[] = [
     transmission: "Otomatik",
     location: "Konya / Karatay",
     tags: ["Firsat", "Benzin", "SUV"],
+    expertise: {
+      frontBumper: "Orijinal",
+      hood: "Orijinal",
+      roof: "Orijinal",
+      rearBumper: "Orijinal",
+      leftFrontFender: "Orijinal",
+      leftFrontDoor: "Orijinal",
+      leftRearDoor: "Orijinal",
+      leftRearFender: "Orijinal",
+      rightFrontFender: "Orijinal",
+      rightFrontDoor: "Orijinal",
+      rightRearDoor: "Orijinal",
+      rightRearFender: "Orijinal",
+    },
   },
 ];
 
@@ -238,5 +410,6 @@ export const sahibindenStoreSnapshot: Vehicle[] = localVehicleSeeds.map((vehicle
     tags: vehicle.tags,
     featured: vehicle.featured,
     sourceUrl: process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? DEFAULT_SAHIBINDEN_STORE_URL,
+    expertise: vehicle.expertise,
   };
 });
