@@ -82,7 +82,7 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
         </div>
       </section>
 
-      <VehicleExpertise expertise={vehicle.expertise} />
+      <VehicleExpertise expertise={vehicle.expertise} image={vehicle.image} />
     </main>
   );
 }
