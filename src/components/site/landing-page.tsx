@@ -42,7 +42,7 @@ export function LandingPage({ vehicles }: LandingPageProps) {
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <Button asChild size="lg">
-                  <Link href="/galeri">
+                  <Link href="/ilanlar">
                     Araclari Kesfet
                     <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -105,7 +105,7 @@ export function LandingPage({ vehicles }: LandingPageProps) {
                     {formatCurrency(vehicles[0]?.price ?? 0)}
                   </p>
                   <Button asChild variant="secondary">
-                    <Link href="/galeri">Tum Portfoy</Link>
+                    <Link href="/ilanlar">Tum Portfoy</Link>
                   </Button>
                 </div>
               </div>
@@ -160,11 +160,11 @@ export function LandingPage({ vehicles }: LandingPageProps) {
       <section className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <motion.div {...fadeUp} className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Portfoy</p>
-            <h2 className="mt-4 text-4xl font-semibold">Sahibinden akisi ile beslenebilen dinamik arac vitrini</h2>
+            <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">One Cikan Ilanlar</p>
+            <h2 className="mt-4 text-4xl font-semibold">Ana sayfada sadece 3 guclu ilanla ilk etkiyi kuruyoruz</h2>
           </div>
           <p className="max-w-xl text-white/68">
-            Buradaki kartlar su an demo veriyle geliyor. Feed baglandiginda ayni alan otomatik guncellenecek.
+            Tum araclar ayri Ilanlar sayfasinda yer alir. Burada ise sadece dikkat ceken secili araclari gosteriyoruz.
           </p>
         </motion.div>
 
@@ -224,14 +224,19 @@ export function LandingPage({ vehicles }: LandingPageProps) {
                 <div className="mt-6 flex items-center justify-between gap-4">
                   <p className="text-3xl font-semibold text-amber-200">{formatCurrency(vehicle.price)}</p>
                   <Button asChild variant="secondary">
-                    <Link href={vehicle.sourceUrl ?? "#"} target="_blank" rel="noreferrer">
-                      Ilani Ac
+                    <Link href={`/ilanlar/${vehicle.slug}`}>
+                      Detaylari Incele
                     </Link>
                   </Button>
                 </div>
               </div>
             </motion.article>
           ))}
+        </div>
+        <div className="mt-10 flex justify-center">
+          <Button asChild size="lg">
+            <Link href="/ilanlar">Tum Ilanlari Gor</Link>
+          </Button>
         </div>
       </section>
 
