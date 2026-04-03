@@ -77,25 +77,29 @@ function SportbackSilhouette() {
       <div className="absolute inset-x-8 bottom-8 h-px bg-neutral-400/25" />
       <svg viewBox="0 0 760 240" className="relative h-auto w-full">
         <path
-          d="M78 160L120 156L152 118L220 108L298 72L436 64L514 84L570 94L636 108L680 142L704 144L704 166L676 170L648 170L630 148L566 146L540 170L230 170L208 144L142 144L120 170L90 170L78 166Z"
-          fill="#d4cec2"
+          d="M56 164L92 160L126 132L170 126L226 100L302 76L436 72L520 86L592 102L642 116L688 146L718 150L718 170L684 174L658 174L638 150L572 146L548 174L206 174L184 148L126 148L106 174L74 174L56 170Z"
+          fill="#d3ccc0"
         />
         <path
-          d="M178 118L230 110L302 78L430 72L492 86L548 96L594 108L618 128L564 128L518 96L360 86L280 98L240 122L178 128Z"
-          fill="#bbb8b6"
+          d="M170 128L230 100L304 82L430 78L504 90L560 102L610 116L640 142L568 142L520 102L338 92L270 102L220 126L170 132Z"
+          fill="#bdb9b7"
         />
         <path
-          d="M286 90L430 84L498 96L538 126L468 126L436 94L330 98L292 126L250 126Z"
-          fill="#f3ecdd"
+          d="M238 126L276 100L336 90L430 88L488 98L528 126L470 126L438 98L336 100L284 108L252 126Z"
+          fill="#f5eddc"
         />
-        <path d="M242 126L292 126L292 148L226 148Z" fill="#f3ecdd" />
-        <path d="M542 128L604 128L636 146L566 146Z" fill="#f3ecdd" />
-        <path d="M314 148H470V168H314Z" fill="#b9b6b5" />
-        <circle cx="194" cy="170" r="30" fill="#d4cec2" />
-        <circle cx="194" cy="170" r="18" fill="#f3ecdd" />
-        <circle cx="558" cy="170" r="30" fill="#d4cec2" />
-        <circle cx="558" cy="170" r="18" fill="#f3ecdd" />
-        <path d="M98 170H690" stroke="#c9bea8" strokeWidth="4" strokeLinecap="round" opacity="0.45" />
+        <path d="M228 128H300V148L204 148Z" fill="#f5eddc" />
+        <path d="M530 128H610L646 146H564Z" fill="#f5eddc" />
+        <path d="M324 150H476V170H324Z" fill="#b9b6b5" />
+        <path d="M202 146L228 148L194 174H156Z" fill="#c5bba6" opacity="0.65" />
+        <path d="M564 146L598 146L642 174H606Z" fill="#c5bba6" opacity="0.65" />
+        <circle cx="188" cy="174" r="32" fill="#d3ccc0" />
+        <circle cx="188" cy="174" r="22" fill="#f8f1e2" />
+        <circle cx="188" cy="174" r="9" fill="#c8c1b3" />
+        <circle cx="564" cy="174" r="32" fill="#d3ccc0" />
+        <circle cx="564" cy="174" r="22" fill="#f8f1e2" />
+        <circle cx="564" cy="174" r="9" fill="#c8c1b3" />
+        <path d="M88 174H696" stroke="#c9bea8" strokeWidth="4" strokeLinecap="round" opacity="0.45" />
       </svg>
       <div className="mt-3 flex items-center justify-between text-xs uppercase tracking-[0.24em] text-neutral-500">
         <span>Sportback Silueti</span>
