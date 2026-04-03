@@ -58,43 +58,46 @@ function CarDiagram({ expertise }: { expertise: VehicleExpertise }) {
   const fill = (key: keyof VehicleExpertise) => statusStyles[expertise[key] as ExpertiseStatus].fill;
 
   return (
-    <svg viewBox="0 0 360 440" className="mx-auto h-auto w-full max-w-[290px] md:max-w-[330px]">
+    <svg viewBox="0 0 360 440" className="mx-auto h-auto w-full max-w-[280px] md:max-w-[320px]">
       <g fill="#d8d1c5">
-        <rect x="159" y="18" width="18" height="16" rx="4" />
-        <rect x="183" y="18" width="18" height="16" rx="4" />
-        <rect x="159" y="406" width="18" height="16" rx="4" />
-        <rect x="183" y="406" width="18" height="16" rx="4" />
-        <circle cx="92" cy="136" r="28" />
-        <circle cx="268" cy="136" r="28" />
-        <circle cx="92" cy="304" r="28" />
-        <circle cx="268" cy="304" r="28" />
+        <rect x="156" y="18" width="20" height="16" rx="4" />
+        <rect x="184" y="18" width="20" height="16" rx="4" />
+        <rect x="156" y="406" width="20" height="16" rx="4" />
+        <rect x="184" y="406" width="20" height="16" rx="4" />
+
+        <rect x="72" y="110" width="24" height="64" rx="12" />
+        <rect x="72" y="266" width="24" height="64" rx="12" />
+        <rect x="264" y="110" width="24" height="64" rx="12" />
+        <rect x="264" y="266" width="24" height="64" rx="12" />
       </g>
 
-      <rect x="140" y="40" width="80" height="28" rx="10" fill={fill("frontBumper")} />
-      <path d="M145 88C154 72 206 72 215 88L224 136C196 126 164 126 136 136L145 88Z" fill={fill("hood")} />
-      <path d="M136 145C148 134 212 134 224 145V292C212 304 148 304 136 292V145Z" fill={fill("roof")} />
-      <path d="M145 313C154 328 206 328 215 313L224 360C196 370 164 370 136 360L145 313Z" fill="#efe6d2" />
-      <rect x="140" y="372" width="80" height="28" rx="10" fill={fill("rearBumper")} />
+      <rect x="136" y="40" width="88" height="30" rx="10" fill={fill("frontBumper")} />
+      <path d="M148 84C157 70 203 70 212 84L220 132C194 123 166 123 140 132L148 84Z" fill={fill("hood")} />
+      <rect x="144" y="142" width="72" height="150" rx="28" fill={fill("roof")} />
+      <path d="M148 306C158 322 202 322 212 306L220 356C193 365 167 365 140 356L148 306Z" fill="#efe6d2" />
+      <rect x="136" y="370" width="88" height="30" rx="10" fill={fill("rearBumper")} />
 
-      <path d="M118 92L136 108V174L114 164L106 104L118 92Z" fill={fill("leftFrontFender")} />
-      <path d="M242 108L260 92L272 104V164L246 174V108Z" fill={fill("rightFrontFender")} />
+      <path d="M114 92L138 110V176L114 188L102 164V114L114 92Z" fill={fill("leftFrontFender")} />
+      <path d="M246 110L270 92L282 114V164L270 188L246 176V110Z" fill={fill("rightFrontFender")} />
 
-      <path d="M110 176L136 186V228L110 220V176Z" fill={fill("leftFrontDoor")} />
-      <path d="M250 186L276 176V220L250 228V186Z" fill={fill("rightFrontDoor")} />
+      <path d="M112 182L138 192V232L112 240V182Z" fill={fill("leftFrontDoor")} />
+      <path d="M248 192L274 182V240L248 232V192Z" fill={fill("rightFrontDoor")} />
 
-      <path d="M110 224L136 232V276L110 286V224Z" fill={fill("leftRearDoor")} />
-      <path d="M250 232L276 224V286L250 276V232Z" fill={fill("rightRearDoor")} />
+      <path d="M112 236L138 244V284L112 294V236Z" fill={fill("leftRearDoor")} />
+      <path d="M248 244L274 236V294L248 284V244Z" fill={fill("rightRearDoor")} />
 
-      <path d="M118 268L136 250V316L118 348L106 336V284L118 268Z" fill={fill("leftRearFender")} />
-      <path d="M242 250L260 268L272 284V336L260 348L242 316V250Z" fill={fill("rightRearFender")} />
+      <path d="M114 248L138 260V326L114 348L102 326V272L114 248Z" fill={fill("leftRearFender")} />
+      <path d="M246 260L270 248L282 272V326L270 348L246 326V260Z" fill={fill("rightRearFender")} />
 
       <path
-        d="M136 108C148 82 212 82 224 108L236 150V288L224 332C212 356 148 356 136 332L124 288V150L136 108Z"
+        d="M146 102C158 82 202 82 214 102L230 148V290L214 338C202 358 158 358 146 338L130 290V148L146 102Z"
         fill="none"
         stroke="#d8d1c5"
         strokeWidth="8"
         strokeLinejoin="round"
       />
+      <path d="M146 148C162 138 198 138 214 148" fill="none" stroke="#f7f0dc" strokeWidth="8" strokeLinecap="round" />
+      <path d="M146 292C162 302 198 302 214 292" fill="none" stroke="#f7f0dc" strokeWidth="8" strokeLinecap="round" />
     </svg>
   );
 }
