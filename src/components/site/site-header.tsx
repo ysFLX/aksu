@@ -27,7 +27,7 @@ export function SiteHeader() {
           </Link>
 
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
-            <nav className="flex items-center gap-2 overflow-x-auto rounded-full border border-white/10 bg-white/[0.04] p-2 shadow-[0_10px_40px_rgba(0,0,0,0.2)]">
+            <nav className="flex items-center gap-2 overflow-x-auto rounded-full border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.025))] p-2 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
 
@@ -36,8 +36,8 @@ export function SiteHeader() {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "shrink-0 rounded-full px-5 py-2.5 text-sm font-medium text-white/72 transition hover:bg-white/8 hover:text-white",
-                      isActive && "bg-white text-neutral-950 shadow-[0_8px_24px_rgba(255,255,255,0.18)]",
+                      "shrink-0 rounded-full px-6 py-3 text-sm font-semibold text-white/78 transition duration-300 hover:bg-white/8 hover:text-white",
+                      isActive && "bg-white/8 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_10px_30px_rgba(255,255,255,0.06)]",
                     )}
                   >
                     {item.label}
@@ -46,7 +46,10 @@ export function SiteHeader() {
               })}
             </nav>
 
-            <Button asChild className="xl:ml-3">
+            <Button
+              asChild
+              className="border border-white/10 bg-white text-neutral-950 shadow-[0_18px_50px_rgba(255,255,255,0.14)] hover:bg-white/92"
+            >
               <Link href={`https://wa.me/${siteConfig.whatsapp}`} target="_blank" rel="noreferrer">
                 WhatsApp
               </Link>
