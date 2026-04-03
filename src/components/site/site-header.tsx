@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
@@ -46,14 +45,14 @@ export function SiteHeader() {
               })}
             </nav>
 
-            <Button
-              asChild
-              className="min-w-[164px] border border-white/10 bg-white px-7 text-base font-semibold text-neutral-950 shadow-[0_18px_50px_rgba(255,255,255,0.14)] hover:-translate-y-0.5 hover:bg-white"
+            <Link
+              href={`https://wa.me/${siteConfig.whatsapp}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-w-[164px] items-center justify-center rounded-full border border-white/10 bg-white px-7 py-3 text-base font-semibold text-neutral-950 shadow-[0_18px_50px_rgba(255,255,255,0.14)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/95"
             >
-              <Link href={`https://wa.me/${siteConfig.whatsapp}`} target="_blank" rel="noreferrer">
-                WhatsApp
-              </Link>
-            </Button>
+              WhatsApp
+            </Link>
           </div>
         </div>
       </div>
