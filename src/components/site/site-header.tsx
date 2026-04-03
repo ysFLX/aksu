@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
   { href: "/", label: "Anasayfa" },
-  { href: "/hakkimizda", label: "Hakkımızda" },
+  { href: "/hakkimizda", label: "Hakkimizda" },
   { href: "/galeri", label: "Galeri" },
-  { href: "/iletisim", label: "İletişim" },
+  { href: "/iletisim", label: "Iletisim" },
 ];
 
 export function SiteHeader() {
@@ -36,7 +36,8 @@ export function SiteHeader() {
                     href={item.href}
                     className={cn(
                       "shrink-0 rounded-full px-6 py-3 text-sm font-semibold text-white/78 transition duration-300 hover:bg-white/8 hover:text-white",
-                      isActive && "bg-white/8 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_10px_30px_rgba(255,255,255,0.06)]",
+                      isActive &&
+                        "bg-white/8 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_10px_30px_rgba(255,255,255,0.06)]",
                     )}
                   >
                     {item.label}
@@ -49,9 +50,10 @@ export function SiteHeader() {
               href={`https://wa.me/${siteConfig.whatsapp}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-w-[164px] items-center justify-center rounded-full border border-white/10 bg-white px-7 py-3 text-base font-semibold text-neutral-950 shadow-[0_18px_50px_rgba(255,255,255,0.14)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/95"
+              aria-label="WhatsApp ile iletisime gec"
+              className="inline-flex min-w-[172px] shrink-0 items-center justify-center rounded-full border border-white/15 bg-white px-7 py-3 text-base font-semibold text-neutral-950 shadow-[0_18px_50px_rgba(255,255,255,0.14)] transition duration-300 hover:-translate-y-0.5 hover:bg-white"
             >
-              WhatsApp
+              <span className="text-neutral-950">WhatsApp</span>
             </Link>
           </div>
         </div>
