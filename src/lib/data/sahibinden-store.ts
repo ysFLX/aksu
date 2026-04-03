@@ -1,4 +1,4 @@
-import type { Vehicle } from "@/types/inventory";
+import type { Vehicle, VehicleTag } from "@/types/inventory";
 
 const brandImages: Record<string, string> = {
   Fiat:
@@ -54,6 +54,28 @@ function inferTransmission(title: string) {
   return "Bilinmiyor";
 }
 
+function inferTags(title: string): VehicleTag[] {
+  const tags: VehicleTag[] = ["Firsat"];
+
+  if (/otomatik/i.test(title)) {
+    tags.push("Otomatik");
+  }
+
+  if (/tdi|dci/i.test(title)) {
+    tags.push("Dizel");
+  }
+
+  if (/tsi|etsi|520i/i.test(title)) {
+    tags.push("Benzin");
+  }
+
+  if (/caddy|master/i.test(title)) {
+    tags.push("Hatcback");
+  }
+
+  return Array.from(new Set(tags));
+}
+
 function inferKm(title: string) {
   const match = title.match(/(\d{2,3}\.\d{3})\s*km/i);
   if (!match) return undefined;
@@ -90,7 +112,7 @@ function toVehicle(input: {
     location: "Konya / Karatay",
     image,
     gallery: [image],
-    tags: [input.color, "Sahibinden", "Firsat"],
+    tags: inferTags(input.title),
     featured: ["64", "65", "66"].includes(input.id),
     sourceUrl: process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? "https://gorkemoto.sahibinden.com/",
   };
@@ -168,4 +190,3 @@ export const sahibindenStoreSnapshot: Vehicle[] = [
     publishedAt: "2025-12-07",
   },
 ].map(toVehicle);
-
