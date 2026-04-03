@@ -18,7 +18,7 @@ export function VehicleGallery({ title, images, tags }: VehicleGalleryProps) {
   return (
     <div className="max-w-full space-y-5 overflow-hidden">
       <div className="relative h-[340px] overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_rgba(255,255,255,0.03)_48%,_rgba(0,0,0,0.28)_100%)] sm:h-[420px] xl:h-[520px]">
-        <Image src={activeImage} alt={title} fill className="object-contain p-3 sm:p-4" priority />
+        <Image src={activeImage} alt={title} fill className="object-cover object-center" priority />
         <div className="absolute inset-x-6 bottom-6 flex flex-wrap gap-2">
           {tags.map((tag) => (
             <span

@@ -74,22 +74,15 @@ type VehicleExpertiseProps = {
   image?: string;
 };
 
-function BlurredVehicleHero({ image }: { image?: string }) {
+function VehicleHero({ image }: { image?: string }) {
   if (!image) {
     return null;
   }
 
   return (
-    <div className="relative mt-6 overflow-hidden rounded-[1.5rem] border border-black/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),rgba(255,255,255,0.18))]">
+    <div className="relative mt-6 overflow-hidden rounded-[1.5rem] border border-black/6 bg-white/35">
       <div className="relative h-[240px] overflow-hidden">
-        <Image src={image} alt="Arac silueti" fill className="scale-105 object-cover blur-[4px] saturate-90 contrast-110" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(247,240,220,0.04),rgba(247,240,220,0.56))]" />
-        <div className="absolute inset-x-6 bottom-5 rounded-[1.25rem] border border-black/8 bg-white/38 px-4 py-3 backdrop-blur-sm">
-          <div className="flex items-center justify-between text-xs uppercase tracking-[0.24em] text-neutral-600">
-            <span>Arac Silueti</span>
-            <span>Blur Preview</span>
-          </div>
-        </div>
+        <Image src={image} alt="Arac gorseli" fill className="object-cover object-center" />
       </div>
     </div>
   );
@@ -161,7 +154,7 @@ export function VehicleExpertise({ expertise, image }: VehicleExpertiseProps) {
               })}
             </div>
 
-            <BlurredVehicleHero image={image} />
+            <VehicleHero image={image} />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
