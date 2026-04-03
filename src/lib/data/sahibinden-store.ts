@@ -1,44 +1,25 @@
-import generatedStore from "@/lib/data/generated/sahibinden-store.generated.json";
+import { existsSync, readdirSync } from "node:fs";
+import path from "node:path";
+
 import type { Vehicle, VehicleTag } from "@/types/inventory";
 
 const DEFAULT_SAHIBINDEN_STORE_URL = "https://gorkemoto.sahibinden.com/";
+const LOCAL_CAR_ROOT = path.join(process.cwd(), "src", "arabalar");
 
-type SeedVehicleInput = {
+type LocalVehicleSeed = {
   id: string;
+  folder: string;
   title: string;
-  color: string;
-  price: number;
-  publishedAt: string;
-};
-
-type SyncedVehicleRecord = {
-  id: string;
-  title?: string;
-  price?: number;
-  image?: string;
-  gallery?: string[];
-  sourceUrl?: string;
-  location?: string;
-  fuel?: string;
-  transmission?: string;
-  km?: number;
+  brand: string;
+  model: string;
   year?: number;
-  brand?: string;
-  model?: string;
-  description?: string;
-};
-
-const brandImages: Record<string, string> = {
-  Fiat:
-    "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80",
-  Renault:
-    "https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80",
-  Volkswagen:
-    "https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=1200&q=80",
-  Skoda:
-    "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
-  BMW:
-    "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80",
+  price: number;
+  km?: number;
+  fuel: string;
+  transmission: string;
+  location: string;
+  tags: VehicleTag[];
+  featured?: boolean;
 };
 
 function slugify(value: string) {
@@ -48,178 +29,214 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-function inferBrand(title: string) {
-  if (/egea/i.test(title)) return "Fiat";
-  if (/clio|fluence|master/i.test(title)) return "Renault";
-  if (/golf|caddy/i.test(title)) return "Volkswagen";
-  if (/octavia|scala/i.test(title)) return "Skoda";
-  if (/520i|bmw/i.test(title)) return "BMW";
-  return "Arac";
-}
+function getGalleryForFolder(folder: string) {
+  const folderPath = path.join(LOCAL_CAR_ROOT, folder);
 
-function inferModel(title: string) {
-  if (/egea/i.test(title)) return "Egea";
-  if (/clio/i.test(title)) return "Clio";
-  if (/golf style/i.test(title)) return "Golf Style";
-  if (/golf 1\.5tsi/i.test(title)) return "Golf";
-  if (/caddy/i.test(title)) return "Caddy";
-  if (/octavia/i.test(title)) return "Octavia";
-  if (/master/i.test(title)) return "Master";
-  if (/scala/i.test(title)) return "Scala";
-  if (/fluence/i.test(title)) return "Fluence";
-  if (/520i/i.test(title)) return "520i";
-  return "Model";
-}
-
-function inferFuel(title: string) {
-  if (/tdi|dci/i.test(title)) return "Dizel";
-  if (/etsi|tsi|520i/i.test(title)) return "Benzin";
-  return "Bilinmiyor";
-}
-
-function inferTransmission(title: string) {
-  if (/otomatik/i.test(title)) return "Otomatik";
-  return "Bilinmiyor";
-}
-
-function inferTags(title: string): VehicleTag[] {
-  const tags: VehicleTag[] = ["Firsat"];
-
-  if (/otomatik/i.test(title)) {
-    tags.push("Otomatik");
+  if (!existsSync(folderPath)) {
+    return [];
   }
 
-  if (/tdi|dci/i.test(title)) {
-    tags.push("Dizel");
-  }
-
-  if (/tsi|etsi|520i/i.test(title)) {
-    tags.push("Benzin");
-  }
-
-  if (/caddy|master/i.test(title)) {
-    tags.push("Hatcback");
-  }
-
-  return Array.from(new Set(tags));
+  return readdirSync(folderPath)
+    .filter((file) => /\.(jpg|jpeg|png|webp)$/i.test(file))
+    .sort((a, b) => a.localeCompare(b, "tr"))
+    .map((file) => `/api/car-images/${folder}/${file}`);
 }
 
-function inferKm(title: string) {
-  const match = title.match(/(\d{2,3}\.\d{3})\s*km/i);
-  if (!match) return undefined;
-  return Number(match[1].replace(/\./g, ""));
-}
-
-function inferYear(title: string) {
-  const match = title.match(/\b(20\d{2}|19\d{2})\b/);
-  return match ? Number(match[1]) : undefined;
-}
-
-function toVehicle(input: SeedVehicleInput, synced?: SyncedVehicleRecord): Vehicle {
-  const resolvedTitle = synced?.title ?? input.title;
-  const brand = synced?.brand ?? inferBrand(resolvedTitle);
-  const fallbackImage = brandImages[brand] ?? brandImages.BMW;
-  const image = synced?.image ?? fallbackImage;
-  const gallery = synced?.gallery?.length ? synced.gallery : [image];
-
-  return {
-    id: input.id,
-    slug: slugify(resolvedTitle),
-    title: resolvedTitle,
-    brand,
-    model: synced?.model ?? inferModel(resolvedTitle),
-    year: synced?.year ?? inferYear(resolvedTitle),
-    price: synced?.price ?? input.price,
-    currency: "TRY",
-    km: synced?.km ?? inferKm(resolvedTitle),
-    fuel: synced?.fuel ?? inferFuel(resolvedTitle),
-    transmission: synced?.transmission ?? inferTransmission(resolvedTitle),
-    location: synced?.location ?? "Konya / Karatay",
-    image,
-    gallery,
-    tags: inferTags(resolvedTitle),
-    featured: ["64", "65", "66"].includes(input.id),
-    sourceUrl: synced?.sourceUrl ?? process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? DEFAULT_SAHIBINDEN_STORE_URL,
-  };
-}
-
-const seedVehicles: SeedVehicleInput[] = [
+const localVehicleSeeds: LocalVehicleSeed[] = [
   {
     id: "64",
-    title: "Gorkem | Hatasiz Boyasiz! | Urban Egea Otomatik | Karta Taksit!",
-    color: "Fume",
-    price: 1159000,
-    publishedAt: "2025-12-20",
+    folder: "520i",
+    title: "BMW 520i Special Edition Luxury",
+    brand: "BMW",
+    model: "520i",
+    year: 2020,
+    price: 3685000,
+    km: 63000,
+    fuel: "Benzin",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Benzin", "Otomatik"],
+    featured: true,
   },
   {
     id: "65",
-    title: "Gorkem | Sorunsuz | Dusuk Km Touch Clio | Karta Taksit!",
-    color: "Beyaz",
-    price: 725000,
-    publishedAt: "2025-12-20",
+    folder: "b150",
+    title: "Mercedes-Benz B150",
+    brand: "Mercedes-Benz",
+    model: "B150",
+    year: 2011,
+    price: 975000,
+    km: 142000,
+    fuel: "Benzin",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Benzin", "Hatcback"],
+    featured: true,
   },
   {
     id: "66",
-    title: "Gorkem | Sorunsuz 1.0eTSI Golf Style | Karta Taksit!",
-    color: "Mavi",
-    price: 1485000,
-    publishedAt: "2025-12-19",
+    folder: "c200",
+    title: "Mercedes-Benz C200 AMG",
+    brand: "Mercedes-Benz",
+    model: "C200",
+    year: 2021,
+    price: 2875000,
+    km: 62000,
+    fuel: "Benzin",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Benzin", "Sedan"],
+    featured: true,
   },
   {
     id: "67",
-    title: "Gorkem | Sorunsuz | Otomatik Caddy Comfortline | Karta Taksit",
-    color: "Gumus Gri",
-    price: 719000,
-    publishedAt: "2025-12-15",
+    folder: "clio",
+    title: "Renault Clio Touch",
+    brand: "Renault",
+    model: "Clio",
+    year: 2020,
+    price: 725000,
+    km: 89000,
+    fuel: "Benzin",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Benzin", "Otomatik"],
   },
   {
     id: "68",
-    title: "Gorkem | Hatasiz! 1 Boya | 1.6 TDI Octavia | Karta Taksit",
-    color: "Beyaz",
+    folder: "corolla",
+    title: "Toyota Corolla",
+    brand: "Toyota",
+    model: "Corolla",
+    year: 2021,
     price: 1195000,
-    publishedAt: "2025-12-11",
+    km: 54000,
+    fuel: "Benzin",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Benzin", "Sedan"],
   },
   {
     id: "69",
-    title: "Gorkem | 2.3 dCi Renault Master 15m3 | Karta Taksit!",
-    color: "Beyaz",
-    price: 450000,
-    publishedAt: "2025-12-10",
+    folder: "fluence",
+    title: "Renault Fluence Touch Plus",
+    brand: "Renault",
+    model: "Fluence",
+    year: 2016,
+    price: 925000,
+    km: 63000,
+    fuel: "Dizel",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Dizel", "Sedan"],
   },
   {
     id: "70",
-    title: "Gorkem | Hatasiz Boyasiz! | 1.6 TDI Scala | Karta Taksit!",
-    color: "Mavi",
-    price: 1439000,
-    publishedAt: "2025-12-08",
+    folder: "focus",
+    title: "Ford Focus",
+    brand: "Ford",
+    model: "Focus",
+    year: 2019,
+    price: 1095000,
+    km: 97000,
+    fuel: "Dizel",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Dizel", "Hatcback"],
   },
   {
     id: "71",
-    title: "Gorkem | Hatasiz Boyasiz! | Touch Plus Fluence | 63.000 Km",
-    color: "Gri",
-    price: 925000,
-    publishedAt: "2025-12-07",
+    folder: "iveco",
+    title: "Iveco Daily",
+    brand: "Iveco",
+    model: "Daily",
+    year: 2018,
+    price: 1450000,
+    km: 186000,
+    fuel: "Dizel",
+    transmission: "Manuel",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Dizel"],
   },
   {
     id: "72",
-    title: "Gorkem | Hatasiz Boyasiz! | 520i Special Edition Luxury",
-    color: "Gri",
-    price: 3685000,
-    publishedAt: "2025-12-07",
+    folder: "megane1.3",
+    title: "Renault Megane 1.3 TCe",
+    brand: "Renault",
+    model: "Megane 1.3",
+    year: 2022,
+    price: 1439000,
+    km: 51000,
+    fuel: "Benzin",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Benzin", "Sedan"],
   },
   {
     id: "73",
-    title: "Gorkem | Hatasiz Boyasiz! | VW Golf 1.5 TSI Otomatik | Sorunsuz!",
-    color: "Siyah",
-    price: 1359000,
-    publishedAt: "2025-12-07",
+    folder: "megane1.5",
+    title: "Renault Megane 1.5 dCi",
+    brand: "Renault",
+    model: "Megane 1.5",
+    year: 2020,
+    price: 1325000,
+    km: 78000,
+    fuel: "Dizel",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Dizel", "Sedan"],
+  },
+  {
+    id: "74",
+    folder: "passat",
+    title: "Volkswagen Passat",
+    brand: "Volkswagen",
+    model: "Passat",
+    year: 2020,
+    price: 1745000,
+    km: 84000,
+    fuel: "Dizel",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Dizel", "Sedan"],
+  },
+  {
+    id: "75",
+    folder: "tucson",
+    title: "Hyundai Tucson",
+    brand: "Hyundai",
+    model: "Tucson",
+    year: 2021,
+    price: 1965000,
+    km: 47000,
+    fuel: "Benzin",
+    transmission: "Otomatik",
+    location: "Konya / Karatay",
+    tags: ["Firsat", "Benzin", "SUV"],
   },
 ];
 
-const syncedById = new Map(
-  (generatedStore as SyncedVehicleRecord[]).map((vehicle) => [vehicle.id, vehicle]),
-);
+export const sahibindenStoreSnapshot: Vehicle[] = localVehicleSeeds.map((vehicle) => {
+  const gallery = getGalleryForFolder(vehicle.folder);
+  const image = gallery[0] ?? "";
 
-export const sahibindenStoreSnapshot: Vehicle[] = seedVehicles.map((vehicle) =>
-  toVehicle(vehicle, syncedById.get(vehicle.id)),
-);
+  return {
+    id: vehicle.id,
+    slug: slugify(vehicle.title),
+    title: vehicle.title,
+    brand: vehicle.brand,
+    model: vehicle.model,
+    year: vehicle.year,
+    price: vehicle.price,
+    currency: "TRY",
+    km: vehicle.km,
+    fuel: vehicle.fuel,
+    transmission: vehicle.transmission,
+    location: vehicle.location,
+    image,
+    gallery,
+    tags: vehicle.tags,
+    featured: vehicle.featured,
+    sourceUrl: process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? DEFAULT_SAHIBINDEN_STORE_URL,
+  };
+});
