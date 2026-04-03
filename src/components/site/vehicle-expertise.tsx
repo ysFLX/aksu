@@ -71,6 +71,40 @@ type VehicleExpertiseProps = {
   expertise?: VehicleExpertise;
 };
 
+function SportbackSilhouette() {
+  return (
+    <div className="relative mt-6 overflow-hidden rounded-[1.5rem] border border-black/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),rgba(255,255,255,0.18))] px-4 py-6">
+      <div className="absolute inset-x-8 bottom-8 h-px bg-neutral-400/25" />
+      <svg viewBox="0 0 760 240" className="relative h-auto w-full">
+        <path
+          d="M78 160L120 156L152 118L220 108L298 72L436 64L514 84L570 94L636 108L680 142L704 144L704 166L676 170L648 170L630 148L566 146L540 170L230 170L208 144L142 144L120 170L90 170L78 166Z"
+          fill="#d4cec2"
+        />
+        <path
+          d="M178 118L230 110L302 78L430 72L492 86L548 96L594 108L618 128L564 128L518 96L360 86L280 98L240 122L178 128Z"
+          fill="#bbb8b6"
+        />
+        <path
+          d="M286 90L430 84L498 96L538 126L468 126L436 94L330 98L292 126L250 126Z"
+          fill="#f3ecdd"
+        />
+        <path d="M242 126L292 126L292 148L226 148Z" fill="#f3ecdd" />
+        <path d="M542 128L604 128L636 146L566 146Z" fill="#f3ecdd" />
+        <path d="M314 148H470V168H314Z" fill="#b9b6b5" />
+        <circle cx="194" cy="170" r="30" fill="#d4cec2" />
+        <circle cx="194" cy="170" r="18" fill="#f3ecdd" />
+        <circle cx="558" cy="170" r="30" fill="#d4cec2" />
+        <circle cx="558" cy="170" r="18" fill="#f3ecdd" />
+        <path d="M98 170H690" stroke="#c9bea8" strokeWidth="4" strokeLinecap="round" opacity="0.45" />
+      </svg>
+      <div className="mt-3 flex items-center justify-between text-xs uppercase tracking-[0.24em] text-neutral-500">
+        <span>Sportback Silueti</span>
+        <span>Premium Profil</span>
+      </div>
+    </div>
+  );
+}
+
 function dominantStatus(expertise: VehicleExpertise): ExpertiseStatus {
   const ordered: ExpertiseStatus[] = ["De\u011fi\u015fen", "Boyal\u0131", "Lokal Boyal\u0131", "Orijinal"];
   const keys = partGroups.flatMap((group) => group.parts.map((part) => part.key));
@@ -136,6 +170,8 @@ export function VehicleExpertise({ expertise }: VehicleExpertiseProps) {
                 );
               })}
             </div>
+
+            <SportbackSilhouette />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
