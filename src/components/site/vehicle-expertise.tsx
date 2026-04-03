@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-
 import type { ExpertiseStatus, VehicleExpertise } from "@/types/inventory";
 
 const statusStyles: Record<
@@ -10,117 +8,85 @@ const statusStyles: Record<
     fill: "#bfbfbf",
     badge: "border-neutral-400/25 bg-neutral-300/15 text-neutral-200",
     label: "Orijinal",
-    text: "Aracin parcasi orijinal gorunuyor.",
+    text: "Aracin parcalari orijinal gorunuyor.",
   },
   "Lokal Boyalı": {
     fill: "#ff9a45",
     badge: "border-orange-400/25 bg-orange-400/15 text-orange-100",
     label: "Lokal Boyali",
-    text: "Parcada lokal boya islemi bulunuyor.",
+    text: "Bazi parcalarda lokal boya islemi bulunuyor.",
   },
   Boyalı: {
     fill: "#4f86c6",
     badge: "border-sky-400/25 bg-sky-400/15 text-sky-100",
     label: "Boyali",
-    text: "Parca komple boyali gorunuyor.",
+    text: "Bazi parcalar komple boyali gorunuyor.",
   },
   "Değişen": {
     fill: "#ff5b3d",
     badge: "border-rose-400/25 bg-rose-400/15 text-rose-100",
     label: "Degisen",
-    text: "Parca degisim islemi gormus.",
+    text: "Aracta degisen parca bulunuyor.",
   },
 };
 
-const parts: Array<{
-  key: keyof VehicleExpertise;
-  label: string;
-  description: string;
-  shape: (fill: string) => ReactNode;
-}> = [
-  {
-    key: "hood",
-    label: "Kaput",
-    description: "On ust bolum",
-    shape: (fill) => <path d="M165 103C180 88 220 88 235 103L246 158C220 146 180 146 154 158L165 103Z" fill={fill} />,
-  },
-  {
-    key: "roof",
-    label: "Tavan",
-    description: "Orta ust bolum",
-    shape: (fill) => <path d="M162 163C183 151 217 151 238 163V256C217 267 183 267 162 256V163Z" fill={fill} />,
-  },
-  {
-    key: "frontBumper",
-    label: "On Tampon",
-    description: "On alt bolum",
-    shape: (fill) => <rect x="165" y="49" width="70" height="28" rx="8" fill={fill} />,
-  },
-  {
-    key: "rearBumper",
-    label: "Arka Tampon",
-    description: "Arka alt bolum",
-    shape: (fill) => <rect x="165" y="324" width="70" height="28" rx="8" fill={fill} />,
-  },
-  {
-    key: "leftFrontFender",
-    label: "Sol On Camurluk",
-    description: "Sol on cember",
-    shape: (fill) => <path d="M124 100L146 121V176L108 165V112L124 100Z" fill={fill} />,
-  },
-  {
-    key: "rightFrontFender",
-    label: "Sag On Camurluk",
-    description: "Sag on cember",
-    shape: (fill) => <path d="M276 100L292 112V165L254 176V121L276 100Z" fill={fill} />,
-  },
-  {
-    key: "leftRearFender",
-    label: "Sol Arka Camurluk",
-    description: "Sol arka cember",
-    shape: (fill) => <path d="M108 214L146 203V258L124 279L108 267V214Z" fill={fill} />,
-  },
-  {
-    key: "rightRearFender",
-    label: "Sag Arka Camurluk",
-    description: "Sag arka cember",
-    shape: (fill) => <path d="M254 203L292 214V267L276 279L254 258V203Z" fill={fill} />,
-  },
-  {
-    key: "leftFrontDoor",
-    label: "Sol On Kapi",
-    description: "Sol orta on",
-    shape: (fill) => <path d="M108 169L146 180V224L108 213V169Z" fill={fill} />,
-  },
-  {
-    key: "rightFrontDoor",
-    label: "Sag On Kapi",
-    description: "Sag orta on",
-    shape: (fill) => <path d="M254 180L292 169V213L254 224V180Z" fill={fill} />,
-  },
-  {
-    key: "leftRearDoor",
-    label: "Sol Arka Kapi",
-    description: "Sol orta arka",
-    shape: (fill) => <path d="M108 214L146 225V270L108 252V214Z" fill={fill} />,
-  },
-  {
-    key: "rightRearDoor",
-    label: "Sag Arka Kapi",
-    description: "Sag orta arka",
-    shape: (fill) => <path d="M254 225L292 214V252L254 270V225Z" fill={fill} />,
-  },
+const partLabels: Array<{ key: keyof VehicleExpertise; label: string }> = [
+  { key: "hood", label: "Kaput" },
+  { key: "roof", label: "Tavan" },
+  { key: "frontBumper", label: "On Tampon" },
+  { key: "rearBumper", label: "Arka Tampon" },
+  { key: "leftFrontFender", label: "Sol On Camurluk" },
+  { key: "rightFrontFender", label: "Sag On Camurluk" },
+  { key: "leftRearFender", label: "Sol Arka Camurluk" },
+  { key: "rightRearFender", label: "Sag Arka Camurluk" },
+  { key: "leftFrontDoor", label: "Sol On Kapi" },
+  { key: "rightFrontDoor", label: "Sag On Kapi" },
+  { key: "leftRearDoor", label: "Sol Arka Kapi" },
+  { key: "rightRearDoor", label: "Sag Arka Kapi" },
 ];
 
 type VehicleExpertiseProps = {
   expertise?: VehicleExpertise;
 };
 
-function getDominantStatus(expertise: VehicleExpertise) {
-  const ordered: ExpertiseStatus[] = ["Değişen", "Boyalı", "Lokal Boyalı", "Orijinal"];
-  return ordered.find((status) =>
-    parts.some((part) => expertise[part.key] === status),
-  ) ?? "Orijinal";
+function dominantStatus(expertise: VehicleExpertise): ExpertiseStatus {
+  const order: ExpertiseStatus[] = ["Değişen", "Boyalı", "Lokal Boyalı", "Orijinal"];
+  return order.find((status) => partLabels.some((part) => expertise[part.key] === status)) ?? "Orijinal";
+}
+
+function CarDiagram({ expertise }: { expertise: VehicleExpertise }) {
+  const fill = (key: keyof VehicleExpertise) => statusStyles[expertise[key] as ExpertiseStatus].fill;
+
+  return (
+    <svg viewBox="0 0 360 440" className="mx-auto h-auto w-full max-w-[360px]">
+      <rect x="160" y="18" width="18" height="16" rx="4" fill="#d8d1c5" />
+      <rect x="182" y="18" width="18" height="16" rx="4" fill="#d8d1c5" />
+
+      <rect x="145" y="42" width="70" height="28" rx="8" fill={fill("frontBumper")} />
+      <path d="M145 86C156 68 204 68 215 86L224 138C197 126 163 126 136 138L145 86Z" fill={fill("hood")} />
+      <path d="M138 146C154 135 206 135 222 146V292C206 304 154 304 138 292V146Z" fill={fill("roof")} />
+      <path d="M145 316C159 304 201 304 215 316L224 364C196 376 164 376 136 364L145 316Z" fill="#f2eee6" />
+      <rect x="145" y="378" width="70" height="28" rx="8" fill={fill("rearBumper")} />
+      <rect x="160" y="410" width="18" height="16" rx="4" fill="#d8d1c5" />
+      <rect x="182" y="410" width="18" height="16" rx="4" fill="#d8d1c5" />
+
+      <circle cx="86" cy="142" r="28" fill="#d8d1c5" />
+      <circle cx="86" cy="298" r="28" fill="#d8d1c5" />
+      <circle cx="274" cy="142" r="28" fill="#d8d1c5" />
+      <circle cx="274" cy="298" r="28" fill="#d8d1c5" />
+
+      <path d="M114 84L136 106V178L114 168L104 102L114 84Z" fill={fill("leftFrontFender")} />
+      <path d="M246 106L268 84L278 102V168L246 178V106Z" fill={fill("rightFrontFender")} />
+      <path d="M108 176L136 186V236L108 226V176Z" fill={fill("leftFrontDoor")} />
+      <path d="M252 186L280 176V226L252 236V186Z" fill={fill("rightFrontDoor")} />
+      <path d="M108 230L136 240V292L108 274V230Z" fill={fill("leftRearDoor")} />
+      <path d="M252 240L280 230V274L252 292V240Z" fill={fill("rightRearDoor")} />
+      <path d="M114 282L136 260V332L114 354L104 336V292L114 282Z" fill={fill("leftRearFender")} />
+      <path d="M246 260L268 282L278 292V336L268 354L246 332V260Z" fill={fill("rightRearFender")} />
+
+      <path d="M136 106C151 84 209 84 224 106L236 144V294L224 336C209 358 151 358 136 336L124 294V144L136 106Z" fill="none" stroke="#d8d1c5" strokeWidth="7" />
+    </svg>
+  );
 }
 
 export function VehicleExpertise({ expertise }: VehicleExpertiseProps) {
@@ -128,13 +94,13 @@ export function VehicleExpertise({ expertise }: VehicleExpertiseProps) {
     return null;
   }
 
-  const dominantStatus = getDominantStatus(expertise);
+  const topStatus = dominantStatus(expertise);
 
   return (
-    <section className="mt-10 rounded-[2rem] border border-[#f0d889]/20 bg-[#20170f] p-8">
+    <section className="mt-10 max-w-full overflow-hidden rounded-[2rem] border border-[#f0d889]/20 bg-[#20170f] p-6 md:p-8">
       <p className="text-sm font-semibold uppercase tracking-[0.35em] text-amber-200/70">Boyali Veya Degisen Parca</p>
 
-      <div className="mt-6 rounded-[1.75rem] border border-[#f0d889]/25 bg-[#f7f0dc] p-6 text-neutral-900">
+      <div className="mt-6 max-w-full overflow-hidden rounded-[1.75rem] border border-[#f0d889]/25 bg-[#f7f0dc] p-5 text-neutral-900 md:p-6">
         <div className="flex flex-wrap gap-4 text-sm font-semibold">
           {(Object.keys(statusStyles) as ExpertiseStatus[]).map((status) => (
             <div key={status} className="flex items-center gap-2">
@@ -144,38 +110,24 @@ export function VehicleExpertise({ expertise }: VehicleExpertiseProps) {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="overflow-hidden rounded-[1.5rem] bg-white/40 p-4">
-            <svg viewBox="0 0 400 400" className="mx-auto h-auto w-full max-w-[420px]">
-              <circle cx="94" cy="146" r="28" fill="#d9d9d9" />
-              <circle cx="94" cy="260" r="28" fill="#d9d9d9" />
-              <circle cx="306" cy="146" r="28" fill="#d9d9d9" />
-              <circle cx="306" cy="260" r="28" fill="#d9d9d9" />
-
-              {(Object.keys(statusStyles) as ExpertiseStatus[]).map(() => null)}
-              {parts.map((part) => part.shape(statusStyles[expertise[part.key] as ExpertiseStatus].fill))}
-
-              <path d="M155 90C175 70 225 70 245 90L257 112L238 163V256L257 307L245 330C225 350 175 350 155 330L143 307L162 256V163L143 112L155 90Z" fill="none" stroke="#d7d3c8" strokeWidth="7" />
-              <rect x="172" y="33" width="22" height="12" rx="4" fill="#d7d3c8" />
-              <rect x="206" y="33" width="22" height="12" rx="4" fill="#d7d3c8" />
-              <rect x="172" y="355" width="22" height="12" rx="4" fill="#d7d3c8" />
-              <rect x="206" y="355" width="22" height="12" rx="4" fill="#d7d3c8" />
-            </svg>
+        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+          <div className="min-w-0 rounded-[1.5rem] bg-white/40 p-4">
+            <CarDiagram expertise={expertise} />
           </div>
 
-          <div className="flex flex-col justify-start">
+          <div className="min-w-0">
             <div className="flex items-start gap-3">
-              <span className="mt-2 h-3 w-3 rounded-[2px]" style={{ backgroundColor: statusStyles[dominantStatus].fill }} />
-              <div>
-                <h3 className="text-3xl font-semibold">{statusStyles[dominantStatus].label}</h3>
-                <p className="mt-4 max-w-md text-lg leading-8 text-neutral-700">
-                  {expertise.notes ?? statusStyles[dominantStatus].text}
+              <span className="mt-2 h-3 w-3 rounded-[2px]" style={{ backgroundColor: statusStyles[topStatus].fill }} />
+              <div className="min-w-0">
+                <h3 className="text-3xl font-semibold">{statusStyles[topStatus].label}</h3>
+                <p className="mt-3 max-w-xl text-lg leading-8 text-neutral-700">
+                  {expertise.notes ?? statusStyles[topStatus].text}
                 </p>
               </div>
             </div>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {parts.map((part) => {
+              {partLabels.map((part) => {
                 const status = expertise[part.key] as ExpertiseStatus;
 
                 return (

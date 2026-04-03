@@ -31,15 +31,15 @@ export function VehicleGallery({ title, images, tags }: VehicleGalleryProps) {
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto pb-2">
-        <div className="flex min-w-max gap-3">
+      <div className="w-full max-w-full overflow-x-auto pb-2">
+        <div className="flex w-max max-w-full gap-3">
           {gallery.map((image, index) => (
             <button
               key={`${image}-${index}`}
               type="button"
               onClick={() => setActiveImage(image)}
               className={cn(
-                "relative h-24 w-28 shrink-0 overflow-hidden rounded-[1.1rem] border border-white/10 bg-white/5 transition sm:h-28 sm:w-36",
+                "relative h-20 w-24 shrink-0 overflow-hidden rounded-[1.1rem] border border-white/10 bg-white/5 transition sm:h-24 sm:w-28 md:h-28 md:w-36",
                 activeImage === image && "ring-2 ring-amber-200/80",
               )}
             >
