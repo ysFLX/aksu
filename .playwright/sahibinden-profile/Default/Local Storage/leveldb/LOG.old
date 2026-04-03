@@ -1,0 +1,6 @@
+2026/04/03-12:37:10.940 4090 Reusing MANIFEST C:\Users\lenovo\Desktop\gorkemoto\gorkemoto\.playwright\sahibinden-profile\Default\Local Storage\leveldb/MANIFEST-000001
+2026/04/03-12:37:10.945 4090 Recovering log #3
+2026/04/03-12:37:10.947 4090 Reusing old log C:\Users\lenovo\Desktop\gorkemoto\gorkemoto\.playwright\sahibinden-profile\Default\Local Storage\leveldb/000003.log 
+2026/04/03-12:39:06.900 181c Level-0 table #5: started
+2026/04/03-12:39:06.907 181c Level-0 table #5: 34347 bytes OK
+2026/04/03-12:39:06.910 181c Delete type=0 #3
