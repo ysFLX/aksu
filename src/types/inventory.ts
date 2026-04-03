@@ -30,7 +30,7 @@ export type Vehicle = {
   expertise?: VehicleExpertise;
 };
 
-export type ExpertiseStatus = "Orijinal" | "Boyalı" | "Değişen" | "Lokal Boyalı";
+export type ExpertiseStatus = "Orijinal" | "Boyal\u0131" | "De\u011fi\u015fen" | "Lokal Boyal\u0131";
 
 export type VehicleExpertise = {
   frontBumper: ExpertiseStatus;
