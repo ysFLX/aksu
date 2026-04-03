@@ -23,31 +23,14 @@ const fadeUp = {
 
 export function LandingPage({ vehicles }: LandingPageProps) {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,#2b180d_0%,#120e0c_42%,#080808_100%)] text-white">
+    <main>
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(218,165,32,0.08),transparent_35%,rgba(255,255,255,0.04)_100%)]" />
         <div className="absolute left-1/2 top-16 h-72 w-72 -translate-x-1/2 rounded-full bg-amber-300/10 blur-3xl" />
 
-        <div className="mx-auto grid min-h-screen max-w-7xl gap-16 px-6 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
+        <div className="mx-auto grid min-h-[calc(100vh-88px)] max-w-7xl gap-16 px-6 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
           <div className="flex flex-col">
-            <header className="flex items-center justify-between py-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Gorkemoto</p>
-                <h2 className="mt-2 font-serif text-2xl tracking-wide text-white">{siteConfig.title}</h2>
-              </div>
-              <div className="hidden items-center gap-3 md:flex">
-                <Link href={`tel:${siteConfig.phone}`} className="text-sm text-white/80 transition hover:text-white">
-                  {siteConfig.phone}
-                </Link>
-                <Button asChild variant="secondary">
-                  <Link href={`https://wa.me/${siteConfig.whatsapp}`} target="_blank" rel="noreferrer">
-                    WhatsApp
-                  </Link>
-                </Button>
-              </div>
-            </header>
-
-            <motion.div className="mt-14 max-w-2xl" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <motion.div className="mt-10 max-w-2xl" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-amber-100/90 backdrop-blur">
                 <Sparkles className="h-4 w-4" />
                 {siteConfig.hero.eyebrow}
@@ -59,13 +42,13 @@ export function LandingPage({ vehicles }: LandingPageProps) {
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <Button asChild size="lg">
-                  <a href="#araclar">
+                  <Link href="/galeri">
                     Araclari Kesfet
                     <ArrowRight className="h-4 w-4" />
-                  </a>
+                  </Link>
                 </Button>
                 <Button asChild variant="secondary" size="lg">
-                  <a href="#hakkimizda">Bizi Taniyin</a>
+                  <Link href="/hakkimizda">Bizi Taniyin</Link>
                 </Button>
               </div>
             </motion.div>
@@ -120,7 +103,7 @@ export function LandingPage({ vehicles }: LandingPageProps) {
                     {formatCurrency(vehicles[0]?.price ?? 0)}
                   </p>
                   <Button asChild variant="secondary">
-                    <a href="#araclar">Tum Portfoy</a>
+                    <Link href="/galeri">Tum Portfoy</Link>
                   </Button>
                 </div>
               </div>
@@ -129,7 +112,7 @@ export function LandingPage({ vehicles }: LandingPageProps) {
         </div>
       </section>
 
-      <section id="hakkimizda" className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <motion.div {...fadeUp} className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Hakkimizda</p>
@@ -172,7 +155,7 @@ export function LandingPage({ vehicles }: LandingPageProps) {
         </motion.div>
       </section>
 
-      <section id="araclar" className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <motion.div {...fadeUp} className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Portfoy</p>
@@ -257,6 +240,9 @@ export function LandingPage({ vehicles }: LandingPageProps) {
             <p className="mt-4 max-w-2xl text-white/68">
               Telefon, WhatsApp ve konum bilgisi dogrudan gorunur. Bir sonraki adimda teklif formu ve randevu akisi da ekleyebiliriz.
             </p>
+            <Button asChild className="mt-8" size="lg">
+              <Link href="/iletisim">Iletisim Sayfasina Git</Link>
+            </Button>
           </div>
           <div className="grid gap-3">
             <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-3 rounded-full border border-white/10 bg-black/25 px-5 py-4 text-white/85">
