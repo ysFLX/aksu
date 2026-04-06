@@ -36,8 +36,10 @@ export function GalleryPage({ vehicles }: GalleryPageProps) {
           {vehicles.map((vehicle) => (
             <article key={vehicle.id} className="w-full overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
               <Link href={`/ilanlar/${vehicle.slug}`} className="block">
-                <div className="relative h-72">
-                  <Image src={vehicle.image} alt={vehicle.title} fill className="object-cover" />
+                <div className="relative aspect-[4/3] overflow-hidden bg-black/25">
+                  <Image src={vehicle.image} alt="" aria-hidden fill className="scale-105 object-cover blur-2xl opacity-30" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_70%)]" />
+                  <Image src={vehicle.image} alt={vehicle.title} fill className="object-contain object-center p-3" />
                   <div className="absolute inset-x-4 top-4 flex flex-wrap gap-2">
                     {vehicle.tags.map((tag) => (
                       <span
