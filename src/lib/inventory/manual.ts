@@ -47,6 +47,23 @@ const vehicleSelectColumns =
 const legacyVehicleSelectColumns =
   "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, expertise, sort_order";
 
+function formatSupabaseError(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return "";
+  }
+
+  const errorObject = error as Record<string, unknown>;
+
+  return [errorObject.message, errorObject.details, errorObject.hint]
+    .filter((value): value is string => typeof value === "string" && Boolean(value.trim()))
+    .join(" | ");
+}
+
+function isMissingDescriptionColumnError(error: unknown) {
+  const message = formatSupabaseError(error).toLocaleLowerCase("tr-TR");
+  return message.includes("description") && (message.includes("column") || message.includes("schema cache"));
+}
+
 const expertiseKeys: Array<keyof VehicleExpertise> = [
   "frontBumper",
   "hood",
@@ -378,10 +395,14 @@ async function saveSupabaseInventory(vehicles: ManualVehicleInput[]) {
 
   const hasDescriptions = rows.some((row) => Boolean(row.description?.trim()));
 
-  if (hasDescriptions) {
+  if (isMissingDescriptionColumnError(error) && hasDescriptions) {
     throw new Error(
       "Aciklama kaydedilemedi. Supabase tablosunda description kolonu eksik. supabase/vehicles.sql dosyasini tekrar calistir.",
     );
+  }
+
+  if (error && !isMissingDescriptionColumnError(error)) {
+    throw error;
   }
 
   const legacyRows = rows.map((row) => {

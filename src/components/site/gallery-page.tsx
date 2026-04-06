@@ -11,12 +11,14 @@ type GalleryPageProps = {
 };
 
 export function GalleryPage({ vehicles }: GalleryPageProps) {
+  const hasSingleVehicle = vehicles.length === 1;
+
   return (
     <main className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
       <section className="flex flex-col gap-4">
         <div>
           <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Ilanlar</p>
-          <h1 className="mt-4 max-w-4xl text-5xl font-semibold leading-tight">Tum ilanlar</h1>
+          <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight md:text-5xl">Tum ilanlar</h1>
         </div>
         <p className="max-w-3xl text-lg leading-8 text-white/68">
           Burada galerideki tum araclari tek listede gorebilir, detay sayfasina gecip fotograf, aciklama ve teknik
@@ -25,7 +27,12 @@ export function GalleryPage({ vehicles }: GalleryPageProps) {
       </section>
 
       {vehicles.length ? (
-        <section className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <section
+          className={[
+            "mt-12 grid gap-6",
+            hasSingleVehicle ? "max-w-xl" : "md:grid-cols-2 xl:grid-cols-3",
+          ].join(" ")}
+        >
           {vehicles.map((vehicle) => (
             <article key={vehicle.id} className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
               <Link href={`/ilanlar/${vehicle.slug}`} className="block">
