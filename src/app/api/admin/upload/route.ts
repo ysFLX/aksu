@@ -16,10 +16,32 @@ export async function POST(request: Request) {
     );
   }
 
-  const uploaded = await Promise.all(files.map((file) => uploadVehicleImage(file)));
+  const oversizedFile = files.find((file) => file.size > 4 * 1024 * 1024);
 
-  return NextResponse.json({
-    ok: true,
-    files: uploaded,
-  });
+  if (oversizedFile) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message: `${oversizedFile.name} cok buyuk. Dosya basina en fazla 4 MB yukleyebilirsin.`,
+      },
+      { status: 413 },
+    );
+  }
+
+  try {
+    const uploaded = await Promise.all(files.map((file) => uploadVehicleImage(file)));
+
+    return NextResponse.json({
+      ok: true,
+      files: uploaded,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message: error instanceof Error ? error.message : "Gorseller yuklenemedi.",
+      },
+      { status: 500 },
+    );
+  }
 }

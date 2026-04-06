@@ -67,13 +67,13 @@ export function AdminInventoryPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingKey, setUploadingKey] = useState("");
-  const [fillingKey, setFillingKey] = useState("");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     async function load() {
       const response = await fetch("/api/admin/inventory", { cache: "no-store" });
-      const json = await response.json();
+      const text = await response.text();
+      const json = text ? JSON.parse(text) : {};
       setVehicles(json.vehicles ?? []);
       setBackend(json.backend === "supabase" ? "supabase" : "file");
       setLoading(false);
@@ -110,19 +110,30 @@ export function AdminInventoryPage() {
     setSaving(true);
     setMessage("");
 
-    const response = await fetch("/api/admin/inventory", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ vehicles }),
-    });
+    try {
+      const response = await fetch("/api/admin/inventory", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ vehicles }),
+      });
 
-    const json = await response.json();
-    setVehicles(json.vehicles ?? []);
-    setBackend(json.backend === "supabase" ? "supabase" : "file");
-    setSaving(false);
-    setMessage("Kaydedildi.");
+      const text = await response.text();
+      const json = text ? JSON.parse(text) : {};
+
+      if (!response.ok) {
+        throw new Error(json.message ?? "Kayit sirasinda hata olustu.");
+      }
+
+      setVehicles(json.vehicles ?? []);
+      setBackend(json.backend === "supabase" ? "supabase" : "file");
+      setMessage("Kaydedildi.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Kayit sirasinda hata olustu.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function logout() {
@@ -131,29 +142,84 @@ export function AdminInventoryPage() {
     router.refresh();
   }
 
+  async function compressImage(file: File) {
+    if (file.size <= 1.5 * 1024 * 1024) {
+      return file;
+    }
+
+    return new Promise<File>((resolve) => {
+      const image = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxWidth = 1800;
+        const scale = Math.min(1, maxWidth / image.width);
+        canvas.width = Math.round(image.width * scale);
+        canvas.height = Math.round(image.height * scale);
+
+        const context = canvas.getContext("2d");
+
+        if (!context) {
+          URL.revokeObjectURL(objectUrl);
+          resolve(file);
+          return;
+        }
+
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(
+          (blob) => {
+            URL.revokeObjectURL(objectUrl);
+
+            if (!blob) {
+              resolve(file);
+              return;
+            }
+
+            resolve(new File([blob], file.name.replace(/\.\w+$/, ".jpg"), { type: "image/jpeg" }));
+          },
+          "image/jpeg",
+          0.82,
+        );
+      };
+
+      image.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(file);
+      };
+
+      image.src = objectUrl;
+    });
+  }
+
   async function uploadFiles(files: FileList | null) {
     if (!files?.length) {
       return [];
     }
 
-    const formData = new FormData();
+    const uploadedFiles: string[] = [];
 
-    Array.from(files).forEach((file) => {
-      formData.append("files", file);
-    });
+    for (const file of Array.from(files)) {
+      const preparedFile = await compressImage(file);
+      const formData = new FormData();
+      formData.append("files", preparedFile);
 
-    const response = await fetch("/api/admin/upload", {
-      method: "POST",
-      body: formData,
-    });
+      const response = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-    const json = await response.json();
+      const text = await response.text();
+      const json = text ? JSON.parse(text) : {};
 
-    if (!response.ok) {
-      throw new Error(json.message ?? "Gorseller yuklenemedi.");
+      if (!response.ok) {
+        throw new Error(json.message ?? "Gorseller yuklenemedi.");
+      }
+
+      uploadedFiles.push(...((json.files ?? []) as string[]));
     }
 
-    return (json.files ?? []) as string[];
+    return uploadedFiles;
   }
 
   async function handleCoverUpload(index: number, files: FileList | null) {
@@ -206,54 +272,6 @@ export function AdminInventoryPage() {
       setMessage(error instanceof Error ? error.message : "Galeri gorselleri yuklenemedi.");
     } finally {
       setUploadingKey("");
-    }
-  }
-
-  async function fillFromSourceUrl(index: number) {
-    const sourceUrl = vehicles[index]?.sourceUrl?.trim();
-
-    if (!sourceUrl) {
-      setMessage("Once sahibinden linkini gir.");
-      return;
-    }
-
-    setFillingKey(`fill-${index}`);
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/admin/fill-from-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url: sourceUrl }),
-      });
-
-      const json = await response.json();
-
-      updateVehicle(index, {
-        title: json.data.title ?? vehicles[index].title,
-        brand: json.data.brand ?? vehicles[index].brand,
-        model: json.data.model ?? vehicles[index].model,
-        year: json.data.year ?? vehicles[index].year,
-        price: json.data.price ?? vehicles[index].price,
-        km: json.data.km ?? vehicles[index].km,
-        fuel: json.data.fuel ?? vehicles[index].fuel,
-        transmission: json.data.transmission ?? vehicles[index].transmission,
-        location: json.data.location ?? vehicles[index].location,
-        description: json.data.description ?? vehicles[index].description,
-        sourceUrl: json.data.sourceUrl ?? sourceUrl,
-      });
-
-      if (!response.ok) {
-        throw new Error(json.message ?? "Ilan verileri getirilemedi.");
-      }
-
-      setMessage(json.message ?? "Ilan verileri getirildi. Gorselleri sen ekleyebilirsin.");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Ilan verileri getirilemedi.");
-    } finally {
-      setFillingKey("");
     }
   }
 
@@ -356,21 +374,11 @@ export function AdminInventoryPage() {
               </label>
               <div className="grid gap-2 text-sm xl:col-span-2">
                 <span>Sahibinden Linki</span>
-                <div className="flex flex-col gap-3 xl:flex-row">
-                  <input
-                    value={vehicle.sourceUrl ?? ""}
-                    onChange={(event) => updateVehicle(index, { sourceUrl: event.target.value })}
-                    className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fillFromSourceUrl(index)}
-                    disabled={fillingKey === `fill-${index}`}
-                    className="rounded-full border border-white/10 bg-white/10 px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
-                  >
-                    {fillingKey === `fill-${index}` ? "Getiriliyor..." : "Verileri Getir"}
-                  </button>
-                </div>
+                <input
+                  value={vehicle.sourceUrl ?? ""}
+                  onChange={(event) => updateVehicle(index, { sourceUrl: event.target.value })}
+                  className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                />
               </div>
             </div>
 

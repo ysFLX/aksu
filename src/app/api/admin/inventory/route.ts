@@ -15,21 +15,34 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const body = (await request.json()) as { vehicles?: Vehicle[] };
-  const vehicles = Array.isArray(body.vehicles) ? body.vehicles : [];
-  const saved = await saveManualInventory(vehicles);
+  try {
+    const body = (await request.json()) as { vehicles?: Vehicle[] };
+    const vehicles = Array.isArray(body.vehicles) ? body.vehicles : [];
+    const saved = await saveManualInventory(vehicles);
 
-  revalidatePath("/");
-  revalidatePath("/ilanlar");
-  revalidatePath("/admin");
-  saved.forEach((vehicle) => {
-    revalidatePath(`/ilanlar/${vehicle.slug}`);
-  });
+    revalidatePath("/");
+    revalidatePath("/ilanlar");
+    revalidatePath("/admin");
+    saved.forEach((vehicle) => {
+      revalidatePath(`/ilanlar/${vehicle.slug}`);
+    });
 
-  return NextResponse.json({
-    backend: getInventoryBackend(),
-    ok: true,
-    vehicles: saved,
-    total: saved.length,
-  });
+    return NextResponse.json({
+      backend: getInventoryBackend(),
+      ok: true,
+      vehicles: saved,
+      total: saved.length,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Kayit sirasinda bir hata olustu. Supabase tablo yapisini ve env ayarlarini kontrol et.",
+      },
+      { status: 500 },
+    );
+  }
 }
