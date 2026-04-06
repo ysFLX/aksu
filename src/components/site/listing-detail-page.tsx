@@ -4,6 +4,7 @@ import { ArrowLeft, CalendarDays, CarFront, ExternalLink, Fuel, Gauge, MapPin, S
 import { Button } from "@/components/ui/button";
 import { VehicleExpertise } from "@/components/site/vehicle-expertise";
 import { VehicleGallery } from "@/components/site/vehicle-gallery";
+import { siteConfig } from "@/lib/site-config";
 import { formatCurrency, formatKm, formatVehicleMetaValue } from "@/lib/utils";
 import type { Vehicle } from "@/types/inventory";
 
@@ -51,9 +52,19 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
     { label: "Vites", value: vehicle.transmission, icon: Settings2 },
     { label: "KM", value: vehicle.km ? `${formatKm(vehicle.km)} km` : "Bilinmiyor", icon: Gauge },
   ];
+  const detailRows = [
+    { label: "Marka", value: brand },
+    { label: "Model", value: model },
+    { label: "Model Yili", value: formatVehicleMetaValue(vehicle.year) },
+    { label: "Yakıt", value: vehicle.fuel || "Bilinmiyor" },
+    { label: "Vites", value: vehicle.transmission || "Bilinmiyor" },
+    { label: "Kilometre", value: vehicle.km ? `${formatKm(vehicle.km)} km` : "Bilinmiyor" },
+    { label: "Konum", value: vehicle.location || "Bilinmiyor" },
+    { label: "Kaynak", value: vehicle.sourceUrl ? "Sahibinden Ilani" : "Panel Girisi" },
+  ];
 
   return (
-    <main className="mx-auto max-w-7xl overflow-x-hidden px-6 py-16 lg:px-10">
+    <main className="mx-auto max-w-[1680px] overflow-x-hidden px-6 py-10 lg:px-10 xl:px-14">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Button asChild variant="secondary">
           <Link href="/ilanlar">
@@ -73,12 +84,12 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
         </Link>
       </div>
 
-      <section className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
         <div className="space-y-6">
           <VehicleGallery title={vehicle.title} images={vehicle.gallery} tags={vehicle.tags} />
         </div>
 
-        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+        <aside className="h-fit rounded-[2rem] border border-white/10 bg-white/5 p-8 xl:sticky xl:top-28">
           <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Ilan Detayi</p>
           <h1 className="mt-4 text-4xl font-semibold leading-tight">{vehicle.title}</h1>
           <p className="mt-4 flex items-center gap-2 text-white/68">
@@ -114,13 +125,42 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
             })}
           </div>
 
-          <div className="mt-8 rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-            <p className="text-sm uppercase tracking-[0.25em] text-white/50">Aciklama</p>
-            <p className="mt-4 leading-8 text-white/72">
-              {vehicle.description?.trim()
-                ? vehicle.description
-                : "Bu arac icin aciklama bilgisi henuz eklenmedi. Daha fazla detay icin iletisime gecebilirsiniz."}
-            </p>
+          <div className="mt-8 grid gap-3">
+            <Button asChild className="justify-center rounded-full bg-amber-200 px-6 py-6 text-base font-semibold text-neutral-950 hover:bg-amber-100">
+              <Link href={`https://wa.me/${siteConfig.whatsapp}`} target="_blank" rel="noreferrer">
+                WhatsApp ile Sor
+              </Link>
+            </Button>
+            {vehicle.sourceUrl ? (
+              <Button asChild variant="secondary" className="justify-center rounded-full">
+                <Link href={vehicle.sourceUrl} target="_blank" rel="noreferrer">
+                  Sahibinden Ilanina Git
+                </Link>
+              </Button>
+            ) : null}
+          </div>
+        </aside>
+      </section>
+
+      <section className="mt-10 grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+          <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Arac Aciklamasi</p>
+          <p className="mt-6 text-lg leading-9 text-white/78">
+            {vehicle.description?.trim()
+              ? vehicle.description
+              : "Bu arac icin aciklama bilgisi henuz eklenmedi. Daha fazla detay icin iletisime gecebilirsiniz."}
+          </p>
+        </div>
+
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+          <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Teknik Bilgiler</p>
+          <div className="mt-6 divide-y divide-white/10 overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20">
+            {detailRows.map((row) => (
+              <div key={row.label} className="flex items-center justify-between gap-6 px-5 py-4">
+                <span className="text-sm uppercase tracking-[0.18em] text-white/45">{row.label}</span>
+                <span className="text-right text-base font-semibold text-white">{row.value}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>

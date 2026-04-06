@@ -24,8 +24,8 @@ export function VehicleGallery({ title, images, tags }: VehicleGalleryProps) {
 
   return (
     <div className="max-w-full space-y-5 overflow-hidden">
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#120e0b]">
-        <div className="relative aspect-[16/10] min-h-[340px] sm:min-h-[420px] xl:min-h-[520px]">
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#120e0b] shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+        <div className="relative aspect-[16/10] min-h-[380px] lg:min-h-[520px] xl:min-h-[620px]">
           <Image
             src={activeImage}
             alt=""
@@ -35,7 +35,7 @@ export function VehicleGallery({ title, images, tags }: VehicleGalleryProps) {
             unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/35" />
-          <div className="absolute inset-0 p-4 sm:p-6">
+          <div className="absolute inset-0 p-4 sm:p-6 lg:p-8">
             <div className="relative h-full w-full overflow-hidden rounded-[1.6rem] bg-black/15">
               <Image src={activeImage} alt={title} fill className="object-contain object-center" priority unoptimized />
             </div>
@@ -81,14 +81,14 @@ export function VehicleGallery({ title, images, tags }: VehicleGalleryProps) {
       </div>
 
       <div className="max-w-full overflow-x-auto pb-2">
-        <div className="inline-grid grid-flow-col grid-rows-2 gap-3">
+        <div className="inline-grid grid-flow-col grid-rows-2 gap-3 md:gap-4">
           {gallery.map((image, index) => (
             <button
               key={`${image}-${index}`}
               type="button"
               onClick={() => setActiveImage(image)}
               className={cn(
-                "relative h-20 w-24 overflow-hidden rounded-[1.1rem] border border-white/10 bg-white/5 transition sm:h-24 sm:w-28 md:h-24 md:w-32",
+                "relative h-24 w-28 overflow-hidden rounded-[1.1rem] border border-white/10 bg-white/5 transition sm:h-28 sm:w-36 md:h-28 md:w-40",
                 activeImage === image && "ring-2 ring-amber-200/80",
               )}
             >
