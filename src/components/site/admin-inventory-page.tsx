@@ -67,6 +67,7 @@ export function AdminInventoryPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingKey, setUploadingKey] = useState("");
+  const [fillingKey, setFillingKey] = useState("");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -208,6 +209,52 @@ export function AdminInventoryPage() {
     }
   }
 
+  async function fillFromSourceUrl(index: number) {
+    const sourceUrl = vehicles[index]?.sourceUrl?.trim();
+
+    if (!sourceUrl) {
+      setMessage("Once sahibinden linkini gir.");
+      return;
+    }
+
+    setFillingKey(`fill-${index}`);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/fill-from-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: sourceUrl }),
+      });
+
+      const json = await response.json();
+
+      if (!response.ok) {
+        throw new Error(json.message ?? "Ilan verileri getirilemedi.");
+      }
+
+      updateVehicle(index, {
+        title: json.data.title ?? vehicles[index].title,
+        brand: json.data.brand ?? vehicles[index].brand,
+        model: json.data.model ?? vehicles[index].model,
+        year: json.data.year ?? vehicles[index].year,
+        price: json.data.price ?? vehicles[index].price,
+        km: json.data.km ?? vehicles[index].km,
+        fuel: json.data.fuel ?? vehicles[index].fuel,
+        transmission: json.data.transmission ?? vehicles[index].transmission,
+        location: json.data.location ?? vehicles[index].location,
+        sourceUrl: json.data.sourceUrl ?? sourceUrl,
+      });
+      setMessage("Ilan verileri getirildi. Gorselleri sen ekleyebilirsin.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Ilan verileri getirilemedi.");
+    } finally {
+      setFillingKey("");
+    }
+  }
+
   if (loading) {
     return <main className="mx-auto max-w-7xl px-6 py-16 lg:px-10">Yukleniyor...</main>;
   }
@@ -305,10 +352,24 @@ export function AdminInventoryPage() {
                 <span>Vites</span>
                 <input value={vehicle.transmission} onChange={(event) => updateVehicle(index, { transmission: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
               </label>
-              <label className="grid gap-2 text-sm xl:col-span-2">
+              <div className="grid gap-2 text-sm xl:col-span-2">
                 <span>Sahibinden Linki</span>
-                <input value={vehicle.sourceUrl ?? ""} onChange={(event) => updateVehicle(index, { sourceUrl: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
+                <div className="flex flex-col gap-3 xl:flex-row">
+                  <input
+                    value={vehicle.sourceUrl ?? ""}
+                    onChange={(event) => updateVehicle(index, { sourceUrl: event.target.value })}
+                    className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fillFromSourceUrl(index)}
+                    disabled={fillingKey === `fill-${index}`}
+                    className="rounded-full border border-white/10 bg-white/10 px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                  >
+                    {fillingKey === `fill-${index}` ? "Getiriliyor..." : "Verileri Getir"}
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
