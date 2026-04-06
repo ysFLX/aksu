@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
+import { brandOptions, getModelsByBrand } from "@/lib/data/vehicle-catalog";
 import type { ExpertiseStatus, Vehicle, VehicleExpertise } from "@/types/inventory";
+
+type ProvinceOption = {
+  name: string;
+  districts: string[];
+};
 
 const expertiseFields: Array<{ key: keyof VehicleExpertise; label: string }> = [
   { key: "frontBumper", label: "On Tampon" },
@@ -22,6 +28,8 @@ const expertiseFields: Array<{ key: keyof VehicleExpertise; label: string }> = [
 ];
 
 const expertiseOptions: ExpertiseStatus[] = ["Orijinal", "Lokal Boyalı", "Boyalı", "Değişen"];
+const fuelOptions = ["Benzinli", "Dizel", "Benzin & LPG", "Hibrit", "Elektrikli"];
+const transmissionOptions = ["Manuel", "Otomatik"];
 
 function createVehicle(): Vehicle {
   return {
@@ -60,6 +68,36 @@ function createVehicle(): Vehicle {
   };
 }
 
+function splitLocation(location?: string) {
+  if (!location?.trim()) {
+    return { province: "", district: "" };
+  }
+
+  const [province = "", district = ""] = location.split("/").map((part) => part.trim());
+  return { province, district };
+}
+
+function buildLocation(province: string, district: string) {
+  if (!province) {
+    return "";
+  }
+
+  return district ? `${province} / ${district}` : province;
+}
+
+function formatPrice(value?: number) {
+  if (!value) {
+    return "";
+  }
+
+  return new Intl.NumberFormat("tr-TR").format(value);
+}
+
+function parseNumberValue(raw: string) {
+  const digits = raw.replace(/\D/g, "");
+  return digits ? Number(digits) : 0;
+}
+
 export function AdminInventoryPage() {
   const router = useRouter();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -68,14 +106,23 @@ export function AdminInventoryPage() {
   const [saving, setSaving] = useState(false);
   const [uploadingKey, setUploadingKey] = useState("");
   const [message, setMessage] = useState("");
+  const [provinces, setProvinces] = useState<ProvinceOption[]>([]);
 
   useEffect(() => {
     async function load() {
-      const response = await fetch("/api/admin/inventory", { cache: "no-store" });
-      const text = await response.text();
-      const json = text ? JSON.parse(text) : {};
-      setVehicles(json.vehicles ?? []);
-      setBackend(json.backend === "supabase" ? "supabase" : "file");
+      const [inventoryResponse, locationsResponse] = await Promise.all([
+        fetch("/api/admin/inventory", { cache: "no-store" }),
+        fetch("/api/admin/locations", { cache: "force-cache" }),
+      ]);
+
+      const inventoryText = await inventoryResponse.text();
+      const inventoryJson = inventoryText ? JSON.parse(inventoryText) : {};
+      const locationsText = await locationsResponse.text();
+      const locationsJson = locationsText ? JSON.parse(locationsText) : {};
+
+      setVehicles(inventoryJson.vehicles ?? []);
+      setBackend(inventoryJson.backend === "supabase" ? "supabase" : "file");
+      setProvinces(locationsJson.provinces ?? []);
       setLoading(false);
     }
 
@@ -104,6 +151,22 @@ export function AdminInventoryPage() {
         };
       }),
     );
+  }
+
+  function updateBrand(index: number, brand: string) {
+    const models = getModelsByBrand(brand);
+    const currentModel = vehicles[index]?.model ?? "";
+
+    updateVehicle(index, {
+      brand,
+      model: models.includes(currentModel) ? currentModel : "",
+    });
+  }
+
+  function updateLocation(index: number, province: string, district: string) {
+    updateVehicle(index, {
+      location: buildLocation(province, district),
+    });
   }
 
   async function save() {
@@ -235,7 +298,9 @@ export function AdminInventoryPage() {
 
       const coverImage = uploaded[0];
       const currentGallery = vehicles[index]?.gallery ?? [];
-      const nextGallery = currentGallery.length ? [coverImage, ...currentGallery.filter((item) => item !== coverImage)] : [coverImage];
+      const nextGallery = currentGallery.length
+        ? [coverImage, ...currentGallery.filter((item) => item !== coverImage)]
+        : [coverImage];
 
       updateVehicle(index, {
         image: coverImage,
@@ -286,11 +351,9 @@ export function AdminInventoryPage() {
           <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Admin Panel</p>
           <h1 className="mt-4 text-5xl font-semibold">Ilanlari buradan yonet</h1>
           <p className="mt-4 max-w-2xl text-white/68">
-            Baslik, fiyat, galeri, etiketler ve ekspertiz verilerini duzenleyip kaydedebilirsin.
+            Marka, model, konum, fiyat, galeri ve ekspertiz verilerini secerek daha temiz bir envanter girebilirsin.
           </p>
-          <p className="mt-3 text-sm text-amber-200/70">
-            Kayit yeri: {backend === "supabase" ? "Supabase" : "Yerel dosya"}
-          </p>
+          <p className="mt-3 text-sm text-amber-200/70">Kayit yeri: {backend === "supabase" ? "Supabase" : "Yerel dosya"}</p>
         </div>
 
         <div className="flex gap-3">
@@ -322,205 +385,314 @@ export function AdminInventoryPage() {
       {message ? <p className="mt-6 text-sm text-emerald-300">{message}</p> : null}
 
       <div className="mt-10 grid gap-6">
-        {vehicles.map((vehicle, index) => (
-          <section key={vehicle.id} className="rounded-[2rem] border border-white/10 bg-white/5 p-6">
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="text-2xl font-semibold">{vehicle.title || `Ilan ${index + 1}`}</h2>
-              <button
-                type="button"
-                onClick={() => setVehicles((current) => current.filter((_, vehicleIndex) => vehicleIndex !== index))}
-                className="rounded-full border border-rose-400/20 bg-rose-400/10 px-4 py-2 text-sm text-rose-100"
-              >
-                Sil
-              </button>
-            </div>
+        {vehicles.map((vehicle, index) => {
+          const selectedBrandModels = getModelsByBrand(vehicle.brand);
+          const { province, district } = splitLocation(vehicle.location);
+          const provinceOption = provinces.find((item) => item.name === province);
+          const districtOptions = provinceOption?.districts ?? [];
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <label className="grid gap-2 text-sm">
-                <span>Baslik</span>
-                <input value={vehicle.title} onChange={(event) => updateVehicle(index, { title: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <label className="grid gap-2 text-sm">
-                <span>Marka</span>
-                <input value={vehicle.brand} onChange={(event) => updateVehicle(index, { brand: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <label className="grid gap-2 text-sm">
-                <span>Model</span>
-                <input value={vehicle.model} onChange={(event) => updateVehicle(index, { model: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <label className="grid gap-2 text-sm">
-                <span>Konum</span>
-                <input value={vehicle.location} onChange={(event) => updateVehicle(index, { location: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <label className="grid gap-2 text-sm">
-                <span>Yil</span>
-                <input type="number" value={vehicle.year ?? ""} onChange={(event) => updateVehicle(index, { year: event.target.value ? Number(event.target.value) : undefined })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <label className="grid gap-2 text-sm">
-                <span>Fiyat</span>
-                <input type="number" value={vehicle.price} onChange={(event) => updateVehicle(index, { price: Number(event.target.value) || 0 })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <label className="grid gap-2 text-sm">
-                <span>KM</span>
-                <input type="number" value={vehicle.km ?? ""} onChange={(event) => updateVehicle(index, { km: event.target.value ? Number(event.target.value) : undefined })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <label className="grid gap-2 text-sm">
-                <span>Yakit</span>
-                <input value={vehicle.fuel} onChange={(event) => updateVehicle(index, { fuel: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <label className="grid gap-2 text-sm">
-                <span>Vites</span>
-                <input value={vehicle.transmission} onChange={(event) => updateVehicle(index, { transmission: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <div className="grid gap-2 text-sm xl:col-span-2">
-                <span>Sahibinden Linki</span>
-                <input
-                  value={vehicle.sourceUrl ?? ""}
-                  onChange={(event) => updateVehicle(index, { sourceUrl: event.target.value })}
-                  className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
-                />
+          return (
+            <section key={vehicle.id} className="rounded-[2rem] border border-white/10 bg-white/5 p-6">
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-2xl font-semibold">{vehicle.title || `${vehicle.brand || "Ilan"} ${index + 1}`}</h2>
+                <button
+                  type="button"
+                  onClick={() => setVehicles((current) => current.filter((_, vehicleIndex) => vehicleIndex !== index))}
+                  className="rounded-full border border-rose-400/20 bg-rose-400/10 px-4 py-2 text-sm text-rose-100"
+                >
+                  Sil
+                </button>
               </div>
-            </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <label className="grid gap-2 text-sm">
-                <span>Etiketler</span>
-                <input
-                  value={vehicle.tags.join(", ")}
-                  onChange={(event) =>
-                    updateVehicle(index, {
-                      tags: event.target.value
-                        .split(",")
-                        .map((tag) => tag.trim())
-                        .filter(Boolean) as Vehicle["tags"],
-                    })
-                  }
+              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <label className="grid gap-2 text-sm">
+                  <span>Baslik</span>
+                  <input
+                    value={vehicle.title}
+                    onChange={(event) => updateVehicle(index, { title: event.target.value })}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span>Marka</span>
+                  <select
+                    value={vehicle.brand}
+                    onChange={(event) => updateBrand(index, event.target.value)}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  >
+                    <option value="">Marka sec</option>
+                    {brandOptions.map((brand) => (
+                      <option key={brand} value={brand}>
+                        {brand}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span>Model</span>
+                  <select
+                    value={vehicle.model}
+                    onChange={(event) => updateVehicle(index, { model: event.target.value })}
+                    disabled={!vehicle.brand}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 disabled:opacity-50"
+                  >
+                    <option value="">{vehicle.brand ? "Model sec" : "Once marka sec"}</option>
+                    {selectedBrandModels.map((model) => (
+                      <option key={model} value={model}>
+                        {model}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span>Yil</span>
+                  <input
+                    type="number"
+                    value={vehicle.year ?? ""}
+                    onChange={(event) => updateVehicle(index, { year: event.target.value ? Number(event.target.value) : undefined })}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span>Il</span>
+                  <select
+                    value={province}
+                    onChange={(event) => updateLocation(index, event.target.value, "")}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  >
+                    <option value="">Il sec</option>
+                    {provinces.map((item) => (
+                      <option key={item.name} value={item.name}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span>Ilce</span>
+                  <select
+                    value={district}
+                    onChange={(event) => updateLocation(index, province, event.target.value)}
+                    disabled={!province}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 disabled:opacity-50"
+                  >
+                    <option value="">{province ? "Ilce sec" : "Once il sec"}</option>
+                    {districtOptions.map((item) => (
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span>Fiyat</span>
+                  <input
+                    inputMode="numeric"
+                    value={formatPrice(vehicle.price)}
+                    onChange={(event) => updateVehicle(index, { price: parseNumberValue(event.target.value) })}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                    placeholder="1.000.000"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span>KM</span>
+                  <input
+                    type="number"
+                    value={vehicle.km ?? ""}
+                    onChange={(event) => updateVehicle(index, { km: event.target.value ? Number(event.target.value) : undefined })}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span>Yakit</span>
+                  <select
+                    value={vehicle.fuel}
+                    onChange={(event) => updateVehicle(index, { fuel: event.target.value })}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  >
+                    <option value="">Yakit sec</option>
+                    {fuelOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span>Vites</span>
+                  <select
+                    value={vehicle.transmission}
+                    onChange={(event) => updateVehicle(index, { transmission: event.target.value })}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  >
+                    <option value="">Vites sec</option>
+                    {transmissionOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <div className="grid gap-2 text-sm xl:col-span-3">
+                  <span>Sahibinden Linki</span>
+                  <input
+                    value={vehicle.sourceUrl ?? ""}
+                    onChange={(event) => updateVehicle(index, { sourceUrl: event.target.value })}
+                    className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <label className="grid gap-2 text-sm">
+                  <span>Etiketler</span>
+                  <input
+                    value={vehicle.tags.join(", ")}
+                    onChange={(event) =>
+                      updateVehicle(index, {
+                        tags: event.target.value
+                          .split(",")
+                          .map((tag) => tag.trim())
+                          .filter(Boolean) as Vehicle["tags"],
+                      })
+                    }
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  />
+                </label>
+                <label className="grid gap-2 text-sm">
+                  <span>Kapak gorseli</span>
+                  <label className="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-6 text-center text-white/70">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(event) => handleCoverUpload(index, event.target.files)}
+                    />
+                    {uploadingKey === `cover-${index}` ? "Kapak gorseli yukleniyor..." : "Bilgisayardan kapak gorseli sec"}
+                  </label>
+                  {vehicle.image ? (
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+                      <Image src={vehicle.image} alt={vehicle.title || "Kapak gorseli"} fill className="object-cover" unoptimized />
+                    </div>
+                  ) : null}
+                </label>
+              </div>
+
+              <label className="mt-4 grid gap-2 text-sm">
+                <span>Aciklama</span>
+                <textarea
+                  value={vehicle.description ?? ""}
+                  onChange={(event) => updateVehicle(index, { description: event.target.value })}
+                  rows={6}
                   className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
                 />
               </label>
-              <label className="grid gap-2 text-sm">
-                <span>Kapak gorseli</span>
+
+              <div className="mt-4 grid gap-3">
+                <span className="text-sm">Galeri gorselleri</span>
                 <label className="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-6 text-center text-white/70">
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     className="hidden"
-                    onChange={(event) => handleCoverUpload(index, event.target.files)}
+                    onChange={(event) => handleGalleryUpload(index, event.target.files)}
                   />
-                  {uploadingKey === `cover-${index}` ? "Kapak gorseli yukleniyor..." : "Bilgisayardan kapak gorseli sec"}
+                  {uploadingKey === `gallery-${index}` ? "Galeri gorselleri yukleniyor..." : "Bilgisayardan galeri gorselleri sec"}
                 </label>
-                {vehicle.image ? (
-                  <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-                    <Image src={vehicle.image} alt={vehicle.title || "Kapak gorseli"} fill className="object-cover" unoptimized />
+
+                {vehicle.gallery.length ? (
+                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    {vehicle.gallery.map((image, imageIndex) => (
+                      <div key={`${image}-${imageIndex}`} className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                        <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                          <Image src={image} alt={`${vehicle.title || "Ilan"} ${imageIndex + 1}`} fill className="object-cover" unoptimized />
+                        </div>
+                        <div className="mt-3 flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateVehicle(index, {
+                                image,
+                                gallery: [image, ...vehicle.gallery.filter((item) => item !== image)],
+                              })
+                            }
+                            className="rounded-full border border-white/10 px-3 py-2 text-xs text-white/80"
+                          >
+                            Kapak yap
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const nextGallery = vehicle.gallery.filter((_, itemIndex) => itemIndex !== imageIndex);
+                              updateVehicle(index, {
+                                image: vehicle.image === image ? nextGallery[0] ?? "" : vehicle.image,
+                                gallery: nextGallery,
+                              });
+                            }}
+                            className="rounded-full border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs text-rose-100"
+                          >
+                            Kaldir
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : null}
-              </label>
-            </div>
+              </div>
 
-            <label className="mt-4 grid gap-2 text-sm">
-              <span>Aciklama</span>
-              <textarea
-                value={vehicle.description ?? ""}
-                onChange={(event) => updateVehicle(index, { description: event.target.value })}
-                rows={6}
-                className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
-              />
-            </label>
-
-            <div className="mt-4 grid gap-3">
-              <span className="text-sm">Galeri gorselleri</span>
-              <label className="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-6 text-center text-white/70">
+              <label className="mt-4 flex items-center gap-3 text-sm">
                 <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={(event) => handleGalleryUpload(index, event.target.files)}
+                  type="checkbox"
+                  checked={Boolean(vehicle.featured)}
+                  onChange={(event) => updateVehicle(index, { featured: event.target.checked })}
                 />
-                {uploadingKey === `gallery-${index}` ? "Galeri gorselleri yukleniyor..." : "Bilgisayardan galeri gorselleri sec"}
+                One cikan ilan olarak goster
               </label>
 
-              {vehicle.gallery.length ? (
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  {vehicle.gallery.map((image, imageIndex) => (
-                    <div key={`${image}-${imageIndex}`} className="rounded-2xl border border-white/10 bg-black/20 p-3">
-                      <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
-                        <Image src={image} alt={`${vehicle.title || "Ilan"} ${imageIndex + 1}`} fill className="object-cover" unoptimized />
-                      </div>
-                      <div className="mt-3 flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            updateVehicle(index, {
-                              image,
-                              gallery: [image, ...vehicle.gallery.filter((item) => item !== image)],
-                            })
-                          }
-                          className="rounded-full border border-white/10 px-3 py-2 text-xs text-white/80"
-                        >
-                          Kapak yap
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const nextGallery = vehicle.gallery.filter((_, itemIndex) => itemIndex !== imageIndex);
-                            updateVehicle(index, {
-                              image: vehicle.image === image ? nextGallery[0] ?? "" : vehicle.image,
-                              gallery: nextGallery,
-                            });
-                          }}
-                          className="rounded-full border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs text-rose-100"
-                        >
-                          Kaldir
-                        </button>
-                      </div>
-                    </div>
+              <div className="mt-8">
+                <p className="text-sm uppercase tracking-[0.28em] text-amber-200/70">Ekspertiz</p>
+                <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {expertiseFields.map((field) => (
+                    <label key={field.key} className="grid gap-2 text-sm">
+                      <span>{field.label}</span>
+                      <select
+                        value={vehicle.expertise?.[field.key] ?? "Orijinal"}
+                        onChange={(event) => updateExpertise(index, field.key, event.target.value)}
+                        className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                      >
+                        {expertiseOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                   ))}
                 </div>
-              ) : null}
-            </div>
-
-            <label className="mt-4 flex items-center gap-3 text-sm">
-              <input
-                type="checkbox"
-                checked={Boolean(vehicle.featured)}
-                onChange={(event) => updateVehicle(index, { featured: event.target.checked })}
-              />
-              One cikan ilan olarak goster
-            </label>
-
-            <div className="mt-8">
-              <p className="text-sm uppercase tracking-[0.28em] text-amber-200/70">Ekspertiz</p>
-              <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {expertiseFields.map((field) => (
-                  <label key={field.key} className="grid gap-2 text-sm">
-                    <span>{field.label}</span>
-                    <select
-                      value={vehicle.expertise?.[field.key] ?? "Orijinal"}
-                      onChange={(event) => updateExpertise(index, field.key, event.target.value)}
-                      className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
-                    >
-                      {expertiseOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                ))}
+                <label className="mt-4 grid gap-2 text-sm">
+                  <span>Ekspertiz Notu</span>
+                  <textarea
+                    value={vehicle.expertise?.notes ?? ""}
+                    onChange={(event) => updateExpertise(index, "notes", event.target.value)}
+                    rows={3}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+                  />
+                </label>
               </div>
-              <label className="mt-4 grid gap-2 text-sm">
-                <span>Ekspertiz Notu</span>
-                <textarea
-                  value={vehicle.expertise?.notes ?? ""}
-                  onChange={(event) => updateExpertise(index, "notes", event.target.value)}
-                  rows={3}
-                  className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
-                />
-              </label>
-            </div>
-          </section>
-        ))}
+            </section>
+          );
+        })}
       </div>
     </main>
   );
