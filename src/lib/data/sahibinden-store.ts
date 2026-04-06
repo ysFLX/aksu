@@ -3,7 +3,7 @@ import path from "node:path";
 
 import type { Vehicle, VehicleExpertise, VehicleTag } from "@/types/inventory";
 
-const DEFAULT_SAHIBINDEN_STORE_URL = "https://gorkemoto.sahibinden.com/";
+const DEFAULT_SAHIBINDEN_STORE_URL = "https://huseyinaksuotomotiv.sahibinden.com/";
 const LOCAL_CAR_ROOT = path.join(process.cwd(), "src", "arabalar");
 
 type LocalVehicleSeed = {

@@ -1,4 +1,4 @@
-# Gorkemoto
+# Aksu Otomotiv
 
 Premium galerici vitrini ve ilan akisi icin kurulan Next.js tabanli altyapi.
 
@@ -30,7 +30,7 @@ Premium galerici vitrini ve ilan akisi icin kurulan Next.js tabanli altyapi.
 Su an:
 
 - `SAHIBINDEN_FEED_URL` varsa JSON feed okumayi dener
-- `NEXT_PUBLIC_SAHIBINDEN_STORE_URL` olarak `https://gorkemoto.sahibinden.com/` verilirse mevcut magaza ilanlarinin snapshot verisini kullanir
+- `NEXT_PUBLIC_SAHIBINDEN_STORE_URL` olarak `https://huseyinaksuotomotiv.sahibinden.com/` verilirse mevcut magaza ilanlarinin snapshot verisini kullanir
 - tarayici otomasyonuyla gercek ilan linkleri ve foto URL'leri `src/lib/data/generated/sahibinden-store.generated.json` dosyasina senkronlanabilir
 
 ## Foto Senkronu

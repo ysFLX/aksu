@@ -4,7 +4,7 @@ import { demoVehicles } from "@/lib/data/inventory";
 import { sahibindenStoreSnapshot } from "@/lib/data/sahibinden-store";
 import type { Vehicle } from "@/types/inventory";
 
-const DEFAULT_SAHIBINDEN_STORE_URL = "https://gorkemoto.sahibinden.com/";
+const DEFAULT_SAHIBINDEN_STORE_URL = "https://huseyinaksuotomotiv.sahibinden.com/";
 
 const remoteVehicleSchema = z.object({
   id: z.union([z.string(), z.number()]),
@@ -54,7 +54,7 @@ export async function getSahibindenVehicles(): Promise<Vehicle[]> {
   const feedUrl = process.env.SAHIBINDEN_FEED_URL;
   const storeUrl = process.env.NEXT_PUBLIC_SAHIBINDEN_STORE_URL ?? DEFAULT_SAHIBINDEN_STORE_URL;
   const storeSnapshot =
-    storeUrl?.includes("gorkemoto.sahibinden.com") ? sahibindenStoreSnapshot : demoVehicles;
+    storeUrl?.includes("huseyinaksuotomotiv.sahibinden.com") ? sahibindenStoreSnapshot : demoVehicles;
 
   if (!feedUrl) {
     return storeSnapshot;
