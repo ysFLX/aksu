@@ -14,6 +14,33 @@ type FetchedListingData = {
   sourceUrl: string;
 };
 
+function titleCaseWord(word: string) {
+  if (!word) {
+    return "";
+  }
+
+  return word.charAt(0).toLocaleUpperCase("tr-TR") + word.slice(1).toLocaleLowerCase("tr-TR");
+}
+
+function humanizeSlug(value: string) {
+  return value
+    .split("-")
+    .filter(Boolean)
+    .map((part) => {
+      if (/^\d+$/.test(part)) {
+        return part;
+      }
+
+      if (part.length <= 3) {
+        return part.toLocaleUpperCase("tr-TR");
+      }
+
+      return titleCaseWord(part);
+    })
+    .join(" ")
+    .trim();
+}
+
 function decodeHtml(value: string) {
   return value
     .replace(/&nbsp;/g, " ")
@@ -119,6 +146,36 @@ function extractDescription($: ReturnType<typeof load>, bodyText: string) {
 
   const best = candidates.find((item) => item.length > 20);
   return best ? best.slice(0, 4000) : undefined;
+}
+
+export function fallbackSahibindenListingData(url: string): FetchedListingData {
+  const parsedUrl = new URL(url);
+  const segments = parsedUrl.pathname
+    .split("/")
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  const detailIndex = segments.findIndex((segment) => segment === "detay");
+  const slugSegment = detailIndex > 0 ? segments[detailIndex - 1] : segments.at(-1) ?? "";
+  const cleanedSlug = slugSegment
+    .split("?")[0]
+    .replace(/^\d+-?/, "")
+    .replace(/-\d{6,}$/g, "")
+    .replace(/-ilan-no-\d+$/i, "");
+
+  const rawTitle = humanizeSlug(cleanedSlug || "Arac");
+  const year = parseNumber(rawTitle.match(/\b(19\d{2}|20\d{2})\b/)?.[0]);
+  const title = rawTitle || "Arac Ilani";
+  const brand = inferBrand(title);
+  const model = inferModel(title, brand);
+
+  return {
+    title,
+    brand,
+    model,
+    year,
+    sourceUrl: url,
+  };
 }
 
 export async function fetchSahibindenListingData(url: string): Promise<FetchedListingData> {

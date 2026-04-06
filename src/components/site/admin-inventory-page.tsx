@@ -231,10 +231,6 @@ export function AdminInventoryPage() {
 
       const json = await response.json();
 
-      if (!response.ok) {
-        throw new Error(json.message ?? "Ilan verileri getirilemedi.");
-      }
-
       updateVehicle(index, {
         title: json.data.title ?? vehicles[index].title,
         brand: json.data.brand ?? vehicles[index].brand,
@@ -248,7 +244,12 @@ export function AdminInventoryPage() {
         description: json.data.description ?? vehicles[index].description,
         sourceUrl: json.data.sourceUrl ?? sourceUrl,
       });
-      setMessage("Ilan verileri getirildi. Gorselleri sen ekleyebilirsin.");
+
+      if (!response.ok) {
+        throw new Error(json.message ?? "Ilan verileri getirilemedi.");
+      }
+
+      setMessage(json.message ?? "Ilan verileri getirildi. Gorselleri sen ekleyebilirsin.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Ilan verileri getirilemedi.");
     } finally {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { fetchSahibindenListingData } from "@/lib/sahibinden-parser";
+import { fallbackSahibindenListingData, fetchSahibindenListingData } from "@/lib/sahibinden-parser";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as {
@@ -25,14 +25,17 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       data,
+      partial: false,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        ok: false,
-        message: error instanceof Error ? error.message : "Ilan verileri cekilemedi.",
-      },
-      { status: 400 },
-    );
+    const fallback = fallbackSahibindenListingData(url);
+    const message = error instanceof Error ? error.message : "Ilan verileri cekilemedi.";
+
+    return NextResponse.json({
+      ok: true,
+      data: fallback,
+      partial: true,
+      message: `${message} Temel veriler linkten tahmini olarak dolduruldu.`,
+    });
   }
 }
