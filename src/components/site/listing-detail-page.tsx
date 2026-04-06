@@ -1,5 +1,15 @@
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, CarFront, ExternalLink, Fuel, Gauge, MapPin, Settings2, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarDays,
+  CarFront,
+  ExternalLink,
+  Fuel,
+  Gauge,
+  MapPin,
+  Settings2,
+  ShieldCheck,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { VehicleExpertise } from "@/components/site/vehicle-expertise";
@@ -56,7 +66,7 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
     { label: "Marka", value: brand },
     { label: "Model", value: model },
     { label: "Model Yili", value: formatVehicleMetaValue(vehicle.year) },
-    { label: "Yakıt", value: vehicle.fuel || "Bilinmiyor" },
+    { label: "Yakit", value: vehicle.fuel || "Bilinmiyor" },
     { label: "Vites", value: vehicle.transmission || "Bilinmiyor" },
     { label: "Kilometre", value: vehicle.km ? `${formatKm(vehicle.km)} km` : "Bilinmiyor" },
     { label: "Konum", value: vehicle.location || "Bilinmiyor" },
@@ -73,15 +83,17 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
           </Link>
         </Button>
 
-        <Link
-          href={vehicle.sourceUrl ?? "#"}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex min-w-[190px] items-center justify-center gap-2 rounded-full border border-white/15 bg-white px-7 py-3 text-base font-semibold text-neutral-950 shadow-[0_18px_50px_rgba(255,255,255,0.14)] transition duration-300 hover:-translate-y-0.5 hover:bg-white"
-        >
+        {vehicle.sourceUrl ? (
+          <Link
+            href={vehicle.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-w-[190px] items-center justify-center gap-2 rounded-full border border-white/15 bg-white px-7 py-3 text-base font-semibold text-neutral-950 shadow-[0_18px_50px_rgba(255,255,255,0.14)] transition duration-300 hover:-translate-y-0.5 hover:bg-white"
+          >
             Sahibinden Ilani
             <ExternalLink className="h-4 w-4" />
-        </Link>
+          </Link>
+        ) : null}
       </div>
 
       <section className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
@@ -145,7 +157,7 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
       <section className="mt-10 grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
           <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Arac Aciklamasi</p>
-          <p className="mt-6 text-lg leading-9 text-white/78">
+          <p className="mt-6 whitespace-pre-line text-lg leading-9 text-white/78">
             {vehicle.description?.trim()
               ? vehicle.description
               : "Bu arac icin aciklama bilgisi henuz eklenmedi. Daha fazla detay icin iletisime gecebilirsiniz."}

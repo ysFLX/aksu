@@ -19,7 +19,8 @@ export function GalleryPage({ vehicles }: GalleryPageProps) {
           <h1 className="mt-4 max-w-4xl text-5xl font-semibold leading-tight">Tum ilanlar</h1>
         </div>
         <p className="max-w-3xl text-lg leading-8 text-white/68">
-          Burada galerideki tum araclari tek listede gorebilir, detay sayfasina gecip fotograf, aciklama ve teknik bilgilere bakabilirsin.
+          Burada galerideki tum araclari tek listede gorebilir, detay sayfasina gecip fotograf, aciklama ve teknik
+          bilgilere bakabilirsin.
         </p>
       </section>
 
@@ -87,7 +88,7 @@ export function GalleryPage({ vehicles }: GalleryPageProps) {
       ) : (
         <section className="mt-12 rounded-[2rem] border border-white/10 bg-white/5 p-10 text-center">
           <p className="text-sm uppercase tracking-[0.35em] text-amber-200/70">Envanter Guncelleniyor</p>
-          <h2 className="mt-4 text-4xl font-semibold">Hüseyin Aksu Otomotiv ilanlari bu alanda gosterilecek.</h2>
+          <h2 className="mt-4 text-4xl font-semibold">Huseyin Aksu Otomotiv ilanlari bu alanda gosterilecek.</h2>
           <p className="mx-auto mt-4 max-w-2xl text-white/68">
             Yeni sahibinden magazasi baglandi. Gercek ilan verisi alindiginda bu sayfa otomatik olarak guncellenecek.
           </p>

@@ -22,6 +22,21 @@ create table if not exists public.vehicles (
   updated_at timestamptz not null default now()
 );
 
+alter table public.vehicles
+  add column if not exists source_url text,
+  add column if not exists description text,
+  add column if not exists expertise jsonb,
+  add column if not exists sort_order integer not null default 0,
+  add column if not exists updated_at timestamptz not null default now();
+
+alter table public.vehicles
+  alter column currency set default 'TRY',
+  alter column gallery set default '[]'::jsonb,
+  alter column tags set default '[]'::jsonb,
+  alter column featured set default false,
+  alter column sort_order set default 0,
+  alter column updated_at set default now();
+
 create index if not exists vehicles_sort_order_idx on public.vehicles (sort_order);
 create index if not exists vehicles_featured_idx on public.vehicles (featured);
 
