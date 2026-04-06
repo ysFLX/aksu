@@ -42,6 +42,10 @@ type VehicleRow = {
 
 type LegacyVehicleRow = Omit<VehicleRow, "description">;
 
+type ExpertisePayload = VehicleExpertise & {
+  __description?: string;
+};
+
 const vehicleSelectColumns =
   "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, description, expertise, sort_order";
 const legacyVehicleSelectColumns =
@@ -116,6 +120,15 @@ function normalizeExpertise(expertise?: VehicleExpertise): VehicleExpertise | un
   }
 
   return normalized;
+}
+
+function extractDescriptionFromExpertise(expertise: VehicleExpertise | null | undefined) {
+  if (!expertise || typeof expertise !== "object") {
+    return undefined;
+  }
+
+  const payload = expertise as ExpertisePayload;
+  return typeof payload.__description === "string" && payload.__description.trim() ? payload.__description.trim() : undefined;
 }
 
 function normalizeVehicle(input: ManualVehicleInput): Vehicle {
@@ -311,6 +324,7 @@ function mapLegacyRowToVehicle(row: LegacyVehicleRow): Vehicle {
     tags: Array.isArray(row.tags) ? row.tags : [],
     featured: row.featured,
     sourceUrl: row.source_url ?? undefined,
+    description: extractDescriptionFromExpertise(row.expertise),
     expertise: row.expertise ?? undefined,
   });
 }
@@ -406,9 +420,16 @@ async function saveSupabaseInventory(vehicles: ManualVehicleInput[]) {
   }
 
   const legacyRows = rows.map((row) => {
-    const { description, ...rest } = row;
-    void description;
-    return rest;
+    const { description, expertise, ...rest } = row;
+    const nextExpertise =
+      description && description.trim()
+        ? ({ ...(expertise ?? {}), __description: description.trim() } as ExpertisePayload)
+        : expertise;
+
+    return {
+      ...rest,
+      expertise: nextExpertise,
+    };
   });
   const legacyInsert = await supabase.from("vehicles").insert(legacyRows).select(legacyVehicleSelectColumns);
 

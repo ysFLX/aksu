@@ -30,7 +30,7 @@ export function GalleryPage({ vehicles }: GalleryPageProps) {
         <section
           className={[
             "mt-12 grid gap-6",
-            hasSingleVehicle ? "max-w-xl" : "md:grid-cols-2 xl:grid-cols-3",
+            hasSingleVehicle ? "mx-auto max-w-xl" : "md:grid-cols-2 xl:grid-cols-3",
           ].join(" ")}
         >
           {vehicles.map((vehicle) => (
