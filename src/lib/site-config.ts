@@ -1,7 +1,7 @@
 import type { CompanyStat, ServiceItem } from "@/types/inventory";
 
 export const siteConfig = {
-  name: process.env.NEXT_PUBLIC_COMPANY_NAME ?? "Aksu Otomotiv",
+  name: process.env.NEXT_PUBLIC_COMPANY_NAME ?? "Hüseyin Aksu Otomotiv",
   title: "Premium Galeri Deneyimi",
   description:
     "Modern tasarim, guven veren iletisim ve ozenle secilmis arac portfoyu ile yeni nesil galerici vitrini.",

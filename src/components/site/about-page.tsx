@@ -13,7 +13,7 @@ export function AboutPage() {
           </h1>
         </div>
         <p className="max-w-2xl text-lg leading-8 text-white/68">
-          Aksu Otomotiv, arac ilanlarini sadece listeleyen bir galeri degil; musterinin kararini kolaylastiran,
+          Hüseyin Aksu Otomotiv, arac ilanlarini sadece listeleyen bir galeri degil; musterinin kararini kolaylastiran,
           detaylari saklamayan ve her temasta profesyonellik hissettiren bir marka deneyimi kurmak icin tasarlandi.
         </p>
       </section>
