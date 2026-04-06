@@ -30,11 +30,11 @@ export function GalleryPage({ vehicles }: GalleryPageProps) {
         <section
           className={[
             "mt-12 grid gap-6",
-            hasSingleVehicle ? "mx-auto max-w-xl" : "md:grid-cols-2 xl:grid-cols-3",
+            hasSingleVehicle ? "max-w-[430px]" : "md:grid-cols-2 xl:grid-cols-3",
           ].join(" ")}
         >
           {vehicles.map((vehicle) => (
-            <article key={vehicle.id} className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
+            <article key={vehicle.id} className="w-full overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
               <Link href={`/ilanlar/${vehicle.slug}`} className="block">
                 <div className="relative h-72">
                   <Image src={vehicle.image} alt={vehicle.title} fill className="object-cover" />
