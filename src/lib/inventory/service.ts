@@ -1,7 +1,9 @@
+import { getManualInventory } from "@/lib/inventory/manual";
 import { getSahibindenVehicles } from "@/lib/inventory/providers/sahibinden";
 
 export async function getInventory() {
-  const vehicles = await getSahibindenVehicles();
+  const manualVehicles = getManualInventory();
+  const vehicles = manualVehicles.length ? manualVehicles : await getSahibindenVehicles();
   return vehicles.sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
 }
 

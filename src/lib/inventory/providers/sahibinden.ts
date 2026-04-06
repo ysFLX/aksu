@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { demoVehicles } from "@/lib/data/inventory";
 import { sahibindenStoreSnapshot } from "@/lib/data/sahibinden-store";
 import type { Vehicle } from "@/types/inventory";
 
