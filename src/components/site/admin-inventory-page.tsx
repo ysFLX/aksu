@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import type { ExpertiseStatus, Vehicle, VehicleExpertise } from "@/types/inventory";
 
@@ -59,6 +60,7 @@ function createVehicle(): Vehicle {
 }
 
 export function AdminInventoryPage() {
+  const router = useRouter();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [backend, setBackend] = useState<"file" | "supabase">("file");
   const [loading, setLoading] = useState(true);
@@ -120,6 +122,12 @@ export function AdminInventoryPage() {
     setMessage("Kaydedildi.");
   }
 
+  async function logout() {
+    await fetch("/api/admin/logout", { method: "POST" });
+    router.replace("/admin/giris");
+    router.refresh();
+  }
+
   if (loading) {
     return <main className="mx-auto max-w-7xl px-6 py-16 lg:px-10">Yukleniyor...</main>;
   }
@@ -139,6 +147,13 @@ export function AdminInventoryPage() {
         </div>
 
         <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={logout}
+            className="rounded-full border border-white/10 bg-black/20 px-5 py-3 text-sm font-semibold text-white"
+          >
+            Cikis Yap
+          </button>
           <button
             type="button"
             onClick={() => setVehicles((current) => [...current, createVehicle()])}

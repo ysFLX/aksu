@@ -45,6 +45,28 @@ SUPABASE_SERVICE_ROLE_KEY=
 Bu degiskenler varsa admin paneli Supabase'e yazar.
 Yoksa gecici olarak `src/lib/data/manual-inventory.json` dosyasina yazar.
 
+## Admin Girisi
+
+`/admin` artik giris korumalidir.
+
+Env degiskenleri:
+
+```bash
+ADMIN_USERNAME=
+ADMIN_PASSWORD=
+ADMIN_SESSION_SECRET=
+```
+
+- `ADMIN_USERNAME`: admin kullanici adi
+- `ADMIN_PASSWORD`: admin sifresi
+- `ADMIN_SESSION_SECRET`: session cookie imzalama anahtari
+
+Bu alanlar doldugunda:
+
+- `/admin` giris ister
+- basarili giristen sonra oturum cookie'si olusur
+- `/api/admin/*` route'lari da korunur
+
 ## Sahibinden Entegrasyonu
 
 `src/lib/inventory/providers/sahibinden.ts` dosyasi entegrasyon icin adapter gorevi gorur.
