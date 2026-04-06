@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import type { ExpertiseStatus, Vehicle, VehicleExpertise } from "@/types/inventory";
 
@@ -65,6 +66,7 @@ export function AdminInventoryPage() {
   const [backend, setBackend] = useState<"file" | "supabase">("file");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState("");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -126,6 +128,84 @@ export function AdminInventoryPage() {
     await fetch("/api/admin/logout", { method: "POST" });
     router.replace("/admin/giris");
     router.refresh();
+  }
+
+  async function uploadFiles(files: FileList | null) {
+    if (!files?.length) {
+      return [];
+    }
+
+    const formData = new FormData();
+
+    Array.from(files).forEach((file) => {
+      formData.append("files", file);
+    });
+
+    const response = await fetch("/api/admin/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      throw new Error(json.message ?? "Gorseller yuklenemedi.");
+    }
+
+    return (json.files ?? []) as string[];
+  }
+
+  async function handleCoverUpload(index: number, files: FileList | null) {
+    setUploadingKey(`cover-${index}`);
+    setMessage("");
+
+    try {
+      const uploaded = await uploadFiles(files);
+
+      if (!uploaded.length) {
+        return;
+      }
+
+      const coverImage = uploaded[0];
+      const currentGallery = vehicles[index]?.gallery ?? [];
+      const nextGallery = currentGallery.length ? [coverImage, ...currentGallery.filter((item) => item !== coverImage)] : [coverImage];
+
+      updateVehicle(index, {
+        image: coverImage,
+        gallery: nextGallery,
+      });
+      setMessage("Kapak gorseli yuklendi.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Kapak gorseli yuklenemedi.");
+    } finally {
+      setUploadingKey("");
+    }
+  }
+
+  async function handleGalleryUpload(index: number, files: FileList | null) {
+    setUploadingKey(`gallery-${index}`);
+    setMessage("");
+
+    try {
+      const uploaded = await uploadFiles(files);
+
+      if (!uploaded.length) {
+        return;
+      }
+
+      const currentVehicle = vehicles[index];
+      const nextGallery = [...(currentVehicle?.gallery ?? []), ...uploaded];
+
+      updateVehicle(index, {
+        image: currentVehicle?.image || uploaded[0],
+        gallery: nextGallery,
+      });
+      setMessage("Galeri gorselleri yuklendi.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Galeri gorselleri yuklenemedi.");
+    } finally {
+      setUploadingKey("");
+    }
   }
 
   if (loading) {
@@ -226,10 +306,6 @@ export function AdminInventoryPage() {
                 <input value={vehicle.transmission} onChange={(event) => updateVehicle(index, { transmission: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
               </label>
               <label className="grid gap-2 text-sm xl:col-span-2">
-                <span>Kapak Gorsel URL</span>
-                <input value={vehicle.image} onChange={(event) => updateVehicle(index, { image: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
-              </label>
-              <label className="grid gap-2 text-sm xl:col-span-2">
                 <span>Sahibinden Linki</span>
                 <input value={vehicle.sourceUrl ?? ""} onChange={(event) => updateVehicle(index, { sourceUrl: event.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3" />
               </label>
@@ -252,21 +328,75 @@ export function AdminInventoryPage() {
                 />
               </label>
               <label className="grid gap-2 text-sm">
-                <span>Galeri URL&apos;leri</span>
-                <textarea
-                  value={vehicle.gallery.join("\n")}
-                  onChange={(event) =>
-                    updateVehicle(index, {
-                      gallery: event.target.value
-                        .split("\n")
-                        .map((item) => item.trim())
-                        .filter(Boolean),
-                    })
-                  }
-                  rows={4}
-                  className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
-                />
+                <span>Kapak gorseli</span>
+                <label className="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-6 text-center text-white/70">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(event) => handleCoverUpload(index, event.target.files)}
+                  />
+                  {uploadingKey === `cover-${index}` ? "Kapak gorseli yukleniyor..." : "Bilgisayardan kapak gorseli sec"}
+                </label>
+                {vehicle.image ? (
+                  <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+                    <Image src={vehicle.image} alt={vehicle.title || "Kapak gorseli"} fill className="object-cover" unoptimized />
+                  </div>
+                ) : null}
               </label>
+            </div>
+
+            <div className="mt-4 grid gap-3">
+              <span className="text-sm">Galeri gorselleri</span>
+              <label className="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-6 text-center text-white/70">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(event) => handleGalleryUpload(index, event.target.files)}
+                />
+                {uploadingKey === `gallery-${index}` ? "Galeri gorselleri yukleniyor..." : "Bilgisayardan galeri gorselleri sec"}
+              </label>
+
+              {vehicle.gallery.length ? (
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  {vehicle.gallery.map((image, imageIndex) => (
+                    <div key={`${image}-${imageIndex}`} className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                        <Image src={image} alt={`${vehicle.title || "Ilan"} ${imageIndex + 1}`} fill className="object-cover" unoptimized />
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateVehicle(index, {
+                              image,
+                              gallery: [image, ...vehicle.gallery.filter((item) => item !== image)],
+                            })
+                          }
+                          className="rounded-full border border-white/10 px-3 py-2 text-xs text-white/80"
+                        >
+                          Kapak yap
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const nextGallery = vehicle.gallery.filter((_, itemIndex) => itemIndex !== imageIndex);
+                            updateVehicle(index, {
+                              image: vehicle.image === image ? nextGallery[0] ?? "" : vehicle.image,
+                              gallery: nextGallery,
+                            });
+                          }}
+                          className="rounded-full border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs text-rose-100"
+                        >
+                          Kaldir
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             <label className="mt-4 flex items-center gap-3 text-sm">

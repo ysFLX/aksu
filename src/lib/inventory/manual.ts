@@ -1,13 +1,16 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 
 import { createClient } from "@supabase/supabase-js";
 
 import type { ExpertiseStatus, Vehicle, VehicleExpertise, VehicleTag } from "@/types/inventory";
 
 const manualInventoryPath = path.join(process.cwd(), "src", "lib", "data", "manual-inventory.json");
+const uploadDirectoryPath = path.join(process.cwd(), "public", "uploads", "vehicles");
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseStorageBucket = process.env.SUPABASE_STORAGE_BUCKET || "vehicle-images";
 
 type ManualVehicleInput = Omit<Vehicle, "slug" | "currency"> & {
   slug?: string;
@@ -117,11 +120,11 @@ function saveFileInventory(vehicles: ManualVehicleInput[]) {
   return normalized;
 }
 
-function isSupabaseConfigured() {
+export function isSupabaseConfigured() {
   return Boolean(supabaseUrl && supabaseServiceRoleKey);
 }
 
-function getSupabaseAdminClient() {
+export function getSupabaseAdminClient() {
   if (!supabaseUrl || !supabaseServiceRoleKey) {
     return null;
   }
@@ -132,6 +135,87 @@ function getSupabaseAdminClient() {
       persistSession: false,
     },
   });
+}
+
+async function ensureStorageBucket() {
+  const supabase = getSupabaseAdminClient();
+
+  if (!supabase) {
+    return null;
+  }
+
+  const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+
+  if (listError) {
+    throw listError;
+  }
+
+  const exists = buckets?.some((bucket) => bucket.name === supabaseStorageBucket);
+
+  if (!exists) {
+    const { error: createError } = await supabase.storage.createBucket(supabaseStorageBucket, {
+      public: true,
+      fileSizeLimit: 10 * 1024 * 1024,
+      allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/avif"],
+    });
+
+    if (createError) {
+      throw createError;
+    }
+  }
+
+  return supabase;
+}
+
+function ensureUploadDirectory() {
+  if (!existsSync(uploadDirectoryPath)) {
+    mkdirSync(uploadDirectoryPath, { recursive: true });
+  }
+}
+
+function sanitizeFileName(fileName: string) {
+  const extension = path.extname(fileName) || ".jpg";
+  const baseName = path.basename(fileName, extension).toLocaleLowerCase("tr-TR").replace(/[^a-z0-9]+/g, "-");
+  return `${baseName || "gorsel"}-${randomUUID()}${extension.toLocaleLowerCase("tr-TR")}`;
+}
+
+export async function uploadVehicleImage(file: File) {
+  const fileName = sanitizeFileName(file.name);
+
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = await ensureStorageBucket();
+
+      if (!supabase) {
+        throw new Error("Supabase storage is not configured.");
+      }
+
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const filePath = `admin/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage.from(supabaseStorageBucket).upload(filePath, buffer, {
+        contentType: file.type || "image/jpeg",
+        upsert: false,
+      });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage.from(supabaseStorageBucket).getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch {
+      // file fallback below
+    }
+  }
+
+  ensureUploadDirectory();
+  const targetPath = path.join(uploadDirectoryPath, fileName);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  writeFileSync(targetPath, buffer);
+
+  return `/uploads/vehicles/${fileName}`;
 }
 
 function mapRowToVehicle(row: VehicleRow): Vehicle {

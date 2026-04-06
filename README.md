@@ -40,10 +40,14 @@ Kalici kullanim icin:
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_STORAGE_BUCKET=vehicle-images
 ```
 
 Bu degiskenler varsa admin paneli Supabase'e yazar.
 Yoksa gecici olarak `src/lib/data/manual-inventory.json` dosyasina yazar.
+
+Gorsel yukleme icin ayni Supabase projesinde `vehicle-images` adli public bir storage bucket kullanilir.
+Istersen farkli bir bucket adi verip `SUPABASE_STORAGE_BUCKET` ile degistirebilirsin.
 
 ## Admin Girisi
 
