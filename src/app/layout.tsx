@@ -16,7 +16,7 @@ const sans = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(process.env.SITE_URL ?? "https://aksu-delta.vercel.app"),
   title: `${siteConfig.name} | ${siteConfig.title}`,
   description: siteConfig.description,
   openGraph: {
