@@ -35,6 +35,7 @@ type VehicleRow = {
   tags: VehicleTag[];
   featured: boolean;
   source_url: string | null;
+  description: string | null;
   expertise: VehicleExpertise | null;
   sort_order: number;
 };
@@ -90,6 +91,7 @@ function normalizeVehicle(input: ManualVehicleInput): Vehicle {
     image,
     gallery: gallery.length ? gallery : image ? [image] : [],
     tags: (input.tags ?? []).filter(Boolean) as VehicleTag[],
+    description: input.description?.trim() || undefined,
     expertise: normalizeExpertise(input.expertise),
   };
 }
@@ -237,6 +239,7 @@ function mapRowToVehicle(row: VehicleRow): Vehicle {
     tags: Array.isArray(row.tags) ? row.tags : [],
     featured: row.featured,
     sourceUrl: row.source_url ?? undefined,
+    description: row.description ?? undefined,
     expertise: row.expertise ?? undefined,
   });
 }
@@ -262,6 +265,7 @@ function mapVehicleToRow(vehicle: Vehicle, sortOrder: number): VehicleRow {
     tags: normalized.tags,
     featured: Boolean(normalized.featured),
     source_url: normalized.sourceUrl ?? null,
+    description: normalized.description ?? null,
     expertise: normalized.expertise ?? null,
     sort_order: sortOrder,
   };
@@ -277,7 +281,7 @@ async function getSupabaseInventory() {
   const { data, error } = await supabase
     .from("vehicles")
     .select(
-      "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, expertise, sort_order",
+      "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, description, expertise, sort_order",
     )
     .order("sort_order", { ascending: true });
 
@@ -309,7 +313,7 @@ async function saveSupabaseInventory(vehicles: ManualVehicleInput[]) {
   }
 
   const { data, error } = await supabase.from("vehicles").insert(rows).select(
-    "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, expertise, sort_order",
+    "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, description, expertise, sort_order",
   );
 
   if (error || !data) {

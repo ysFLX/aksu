@@ -245,6 +245,7 @@ export function AdminInventoryPage() {
         fuel: json.data.fuel ?? vehicles[index].fuel,
         transmission: json.data.transmission ?? vehicles[index].transmission,
         location: json.data.location ?? vehicles[index].location,
+        description: json.data.description ?? vehicles[index].description,
         sourceUrl: json.data.sourceUrl ?? sourceUrl,
       });
       setMessage("Ilan verileri getirildi. Gorselleri sen ekleyebilirsin.");
@@ -406,6 +407,16 @@ export function AdminInventoryPage() {
                 ) : null}
               </label>
             </div>
+
+            <label className="mt-4 grid gap-2 text-sm">
+              <span>Aciklama</span>
+              <textarea
+                value={vehicle.description ?? ""}
+                onChange={(event) => updateVehicle(index, { description: event.target.value })}
+                rows={6}
+                className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
+              />
+            </label>
 
             <div className="mt-4 grid gap-3">
               <span className="text-sm">Galeri gorselleri</span>

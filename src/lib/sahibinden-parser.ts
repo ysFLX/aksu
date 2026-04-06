@@ -10,6 +10,7 @@ type FetchedListingData = {
   fuel?: string;
   transmission?: string;
   location?: string;
+  description?: string;
   sourceUrl: string;
 };
 
@@ -106,6 +107,20 @@ function extractJsonLdData($: ReturnType<typeof load>) {
   return null;
 }
 
+function extractDescription($: ReturnType<typeof load>, bodyText: string) {
+  const candidates = [
+    normalizeText($('meta[property="og:description"]').attr("content")),
+    normalizeText($('meta[name="description"]').attr("content")),
+    normalizeText($(".classifiedDescription").text()),
+    normalizeText($("#classifiedDescription").text()),
+    normalizeText(extractByLabel(bodyText, "Açıklama")),
+    normalizeText(extractByLabel(bodyText, "Aciklama")),
+  ].filter(Boolean);
+
+  const best = candidates.find((item) => item.length > 20);
+  return best ? best.slice(0, 4000) : undefined;
+}
+
 export async function fetchSahibindenListingData(url: string): Promise<FetchedListingData> {
   const response = await fetch(url, {
     headers: {
@@ -163,6 +178,7 @@ export async function fetchSahibindenListingData(url: string): Promise<FetchedLi
           .get()
           .join(" / "),
       ),
+    description: extractDescription($, bodyText),
     sourceUrl: url,
   };
 }

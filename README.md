@@ -49,6 +49,9 @@ Yoksa gecici olarak `src/lib/data/manual-inventory.json` dosyasina yazar.
 Gorsel yukleme icin ayni Supabase projesinde `vehicle-images` adli public bir storage bucket kullanilir.
 Istersen farkli bir bucket adi verip `SUPABASE_STORAGE_BUCKET` ile degistirebilirsin.
 
+Yeni alanlar eklenirse `supabase/vehicles.sql` dosyasini yeniden calistirman gerekir.
+Son guncellemede `description` kolonu eklendi.
+
 ## Admin Girisi
 
 `/admin` artik giris korumalidir.

@@ -73,10 +73,11 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
           </div>
 
           <div className="mt-8 rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-            <p className="text-sm uppercase tracking-[0.25em] text-white/50">Genel Bilgilendirme</p>
+            <p className="text-sm uppercase tracking-[0.25em] text-white/50">Aciklama</p>
             <p className="mt-4 leading-8 text-white/72">
-              Bu detay sayfasi galerideki ilani daha rahat incelemek icin hazirlandi. Aracin fiyat, temel ozellik ve gorsel bilgileri
-              burada toplandi. Iletisime gecmeden once genel bir fikir almak icin idealdir.
+              {vehicle.description?.trim()
+                ? vehicle.description
+                : "Bu arac icin aciklama bilgisi henuz eklenmedi. Daha fazla detay icin iletisime gecebilirsiniz."}
             </p>
           </div>
         </div>

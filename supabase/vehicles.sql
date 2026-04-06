@@ -16,6 +16,7 @@ create table if not exists public.vehicles (
   tags jsonb not null default '[]'::jsonb,
   featured boolean not null default false,
   source_url text,
+  description text,
   expertise jsonb,
   sort_order integer not null default 0,
   updated_at timestamptz not null default now()

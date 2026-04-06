@@ -27,6 +27,7 @@ export type Vehicle = {
   tags: VehicleTag[];
   featured?: boolean;
   sourceUrl?: string;
+  description?: string;
   expertise?: VehicleExpertise;
 };
 
