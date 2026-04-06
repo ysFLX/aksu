@@ -1,23 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { getAdminCookieName, verifyAdminSessionToken } from "@/lib/admin-auth";
+import { getAdminCookieName, isAdminSessionTokenValid } from "@/lib/admin-auth";
 
 const publicAdminPaths = new Set(["/admin/giris", "/api/admin/login", "/api/admin/logout"]);
 
 async function isAuthenticated(request: NextRequest) {
   const token = request.cookies.get(getAdminCookieName())?.value;
-
-  if (!token) {
-    return false;
-  }
-
-  try {
-    await verifyAdminSessionToken(token);
-    return true;
-  } catch {
-    return false;
-  }
+  return isAdminSessionTokenValid(token);
 }
 
 export async function middleware(request: NextRequest) {
@@ -49,5 +39,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/admin", "/admin/:path*", "/api/admin/:path*"],
 };

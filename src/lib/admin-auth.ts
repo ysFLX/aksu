@@ -46,6 +46,19 @@ export async function verifyAdminSessionToken(token: string) {
   return payload;
 }
 
+export async function isAdminSessionTokenValid(token?: string) {
+  if (!token) {
+    return false;
+  }
+
+  try {
+    await verifyAdminSessionToken(token);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function getAdminSessionMaxAge() {
   return SESSION_MAX_AGE;
 }
