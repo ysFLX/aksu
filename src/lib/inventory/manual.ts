@@ -401,22 +401,14 @@ async function saveSupabaseInventory(vehicles: ManualVehicleInput[]) {
     return normalized;
   }
 
-  const { data, error } = await supabase.from("vehicles").insert(rows).select(vehicleSelectColumns);
+  const insertResult = await supabase.from("vehicles").insert(rows);
 
-  if (!error && data) {
-    return (data as VehicleRow[]).sort((a, b) => a.sort_order - b.sort_order).map(mapRowToVehicle);
+  if (!insertResult.error) {
+    return await getSupabaseInventory();
   }
 
-  const hasDescriptions = rows.some((row) => Boolean(row.description?.trim()));
-
-  if (isMissingDescriptionColumnError(error) && hasDescriptions) {
-    throw new Error(
-      "Aciklama kaydedilemedi. Supabase tablosunda description kolonu eksik. supabase/vehicles.sql dosyasini tekrar calistir.",
-    );
-  }
-
-  if (error && !isMissingDescriptionColumnError(error)) {
-    throw error;
+  if (!isMissingDescriptionColumnError(insertResult.error)) {
+    throw insertResult.error;
   }
 
   const legacyRows = rows.map((row) => {
@@ -431,15 +423,16 @@ async function saveSupabaseInventory(vehicles: ManualVehicleInput[]) {
       expertise: nextExpertise,
     };
   });
-  const legacyInsert = await supabase.from("vehicles").insert(legacyRows).select(legacyVehicleSelectColumns);
 
-  if (legacyInsert.error || !legacyInsert.data) {
-    throw legacyInsert.error ?? error ?? new Error("Supabase inventory could not be saved.");
+  const legacyInsert = await supabase.from("vehicles").insert(legacyRows);
+
+  if (legacyInsert.error) {
+    throw new Error(
+      "Aciklama kaydedilemedi. Supabase tablosunda description kolonu eksik. supabase/vehicles.sql dosyasini tekrar calistir.",
+    );
   }
 
-  return (legacyInsert.data as LegacyVehicleRow[])
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map(mapLegacyRowToVehicle);
+  return await getSupabaseInventory();
 }
 
 export function getInventoryBackend() {
