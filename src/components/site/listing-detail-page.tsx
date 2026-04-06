@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, ExternalLink, Fuel, Gauge, MapPin, Settings2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CalendarDays, CarFront, ExternalLink, Fuel, Gauge, MapPin, Settings2, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { VehicleExpertise } from "@/components/site/vehicle-expertise";
@@ -11,10 +11,41 @@ type ListingDetailPageProps = {
   vehicle: Vehicle;
 };
 
+function inferBrand(title: string, brand?: string) {
+  if (brand?.trim()) {
+    return brand.trim();
+  }
+
+  return title.split(" ")[0]?.trim() || "Arac";
+}
+
+function inferModel(title: string, brand: string, model?: string) {
+  if (model?.trim()) {
+    return model.trim();
+  }
+
+  const normalizedTitle = title.trim();
+  const withoutBrand = normalizedTitle.toLocaleLowerCase("tr-TR").startsWith(brand.toLocaleLowerCase("tr-TR"))
+    ? normalizedTitle.slice(brand.length).trim()
+    : normalizedTitle;
+
+  return withoutBrand.split(" ").slice(0, 3).join(" ") || "Model";
+}
+
 export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
+  const brand = inferBrand(vehicle.title, vehicle.brand);
+  const model = inferModel(vehicle.title, brand, vehicle.model);
+  const overview = [
+    { label: "Marka", value: brand },
+    { label: "Model", value: model },
+    { label: "Yil", value: formatVehicleMetaValue(vehicle.year) },
+    { label: "KM", value: vehicle.km ? `${formatKm(vehicle.km)} km` : "Bilinmiyor" },
+    { label: "Yakit", value: vehicle.fuel || "Bilinmiyor" },
+    { label: "Vites", value: vehicle.transmission || "Bilinmiyor" },
+  ];
   const specs = [
-    { label: "Marka", value: vehicle.brand, icon: ShieldCheck },
-    { label: "Model", value: vehicle.model, icon: ShieldCheck },
+    { label: "Marka", value: brand, icon: CarFront },
+    { label: "Model", value: model, icon: ShieldCheck },
     { label: "Yil", value: formatVehicleMetaValue(vehicle.year), icon: CalendarDays },
     { label: "Yakit", value: vehicle.fuel, icon: Fuel },
     { label: "Vites", value: vehicle.transmission, icon: Settings2 },
@@ -55,6 +86,17 @@ export function ListingDetailPage({ vehicle }: ListingDetailPageProps) {
             {vehicle.location}
           </p>
           <p className="mt-8 text-5xl font-semibold text-amber-200">{formatCurrency(vehicle.price)}</p>
+
+          <div className="mt-8 overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20">
+            <div className="grid divide-y divide-white/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+              {overview.map((item) => (
+                <div key={item.label} className="px-5 py-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-white/45">{item.label}</p>
+                  <p className="mt-2 text-lg font-semibold text-white">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
             {specs.map((spec) => {

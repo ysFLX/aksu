@@ -62,6 +62,20 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function inferBrand(value: string) {
+  return value.split(" ")[0]?.trim() || "Arac";
+}
+
+function inferModel(title: string, brand: string) {
+  const normalizedTitle = title.trim();
+  const normalizedBrand = brand.trim();
+  const withoutBrand = normalizedTitle.toLocaleLowerCase("tr-TR").startsWith(normalizedBrand.toLocaleLowerCase("tr-TR"))
+    ? normalizedTitle.slice(normalizedBrand.length).trim()
+    : normalizedTitle;
+
+  return withoutBrand.split(" ").slice(0, 2).join(" ") || "Model";
+}
+
 function normalizeExpertise(expertise?: VehicleExpertise): VehicleExpertise | undefined {
   if (!expertise) {
     return undefined;
@@ -83,10 +97,16 @@ function normalizeExpertise(expertise?: VehicleExpertise): VehicleExpertise | un
 function normalizeVehicle(input: ManualVehicleInput): Vehicle {
   const gallery = (input.gallery ?? []).filter(Boolean);
   const image = input.image || gallery[0] || "";
+  const title = input.title?.trim() || input.id;
+  const brand = input.brand?.trim() || inferBrand(title);
+  const model = input.model?.trim() || inferModel(title, brand);
 
   return {
     ...input,
-    slug: input.slug?.trim() || slugify(input.title || input.id),
+    title,
+    brand,
+    model,
+    slug: input.slug?.trim() || slugify(title),
     currency: "TRY",
     image,
     gallery: gallery.length ? gallery : image ? [image] : [],
