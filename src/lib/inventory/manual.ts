@@ -40,6 +40,13 @@ type VehicleRow = {
   sort_order: number;
 };
 
+type LegacyVehicleRow = Omit<VehicleRow, "description">;
+
+const vehicleSelectColumns =
+  "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, description, expertise, sort_order";
+const legacyVehicleSelectColumns =
+  "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, expertise, sort_order";
+
 const expertiseKeys: Array<keyof VehicleExpertise> = [
   "frontBumper",
   "hood",
@@ -268,6 +275,29 @@ function mapRowToVehicle(row: VehicleRow): Vehicle {
   });
 }
 
+function mapLegacyRowToVehicle(row: LegacyVehicleRow): Vehicle {
+  return normalizeVehicle({
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    brand: row.brand,
+    model: row.model,
+    year: row.year ?? undefined,
+    price: row.price,
+    currency: row.currency,
+    km: row.km ?? undefined,
+    fuel: row.fuel,
+    transmission: row.transmission,
+    location: row.location,
+    image: row.image,
+    gallery: Array.isArray(row.gallery) ? row.gallery : [],
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    featured: row.featured,
+    sourceUrl: row.source_url ?? undefined,
+    expertise: row.expertise ?? undefined,
+  });
+}
+
 function mapVehicleToRow(vehicle: Vehicle, sortOrder: number): VehicleRow {
   const normalized = normalizeVehicle(vehicle);
 
@@ -304,16 +334,20 @@ async function getSupabaseInventory() {
 
   const { data, error } = await supabase
     .from("vehicles")
-    .select(
-      "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, description, expertise, sort_order",
-    )
+    .select(vehicleSelectColumns)
     .order("sort_order", { ascending: true });
 
-  if (error || !data) {
-    throw error ?? new Error("Supabase inventory could not be loaded.");
+  if (!error && data) {
+    return (data as VehicleRow[]).map(mapRowToVehicle);
   }
 
-  return (data as VehicleRow[]).map(mapRowToVehicle);
+  const legacy = await supabase.from("vehicles").select(legacyVehicleSelectColumns).order("sort_order", { ascending: true });
+
+  if (legacy.error || !legacy.data) {
+    throw legacy.error ?? error ?? new Error("Supabase inventory could not be loaded.");
+  }
+
+  return (legacy.data as LegacyVehicleRow[]).map(mapLegacyRowToVehicle);
 }
 
 async function saveSupabaseInventory(vehicles: ManualVehicleInput[]) {
@@ -336,15 +370,25 @@ async function saveSupabaseInventory(vehicles: ManualVehicleInput[]) {
     return normalized;
   }
 
-  const { data, error } = await supabase.from("vehicles").insert(rows).select(
-    "id, slug, title, brand, model, year, price, currency, km, fuel, transmission, location, image, gallery, tags, featured, source_url, description, expertise, sort_order",
-  );
+  const { data, error } = await supabase.from("vehicles").insert(rows).select(vehicleSelectColumns);
 
-  if (error || !data) {
-    throw error ?? new Error("Supabase inventory could not be saved.");
+  if (!error && data) {
+    return (data as VehicleRow[]).sort((a, b) => a.sort_order - b.sort_order).map(mapRowToVehicle);
   }
 
-  return (data as VehicleRow[]).sort((a, b) => a.sort_order - b.sort_order).map(mapRowToVehicle);
+  const legacyRows = rows.map((row) => {
+    const { description: _discardedDescription, ...rest } = row;
+    return rest;
+  });
+  const legacyInsert = await supabase.from("vehicles").insert(legacyRows).select(legacyVehicleSelectColumns);
+
+  if (legacyInsert.error || !legacyInsert.data) {
+    throw legacyInsert.error ?? error ?? new Error("Supabase inventory could not be saved.");
+  }
+
+  return (legacyInsert.data as LegacyVehicleRow[])
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map(mapLegacyRowToVehicle);
 }
 
 export function getInventoryBackend() {

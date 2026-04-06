@@ -4,6 +4,25 @@ import { revalidatePath } from "next/cache";
 import { getInventoryBackend, getManualInventory, saveManualInventory } from "@/lib/inventory/manual";
 import type { Vehicle } from "@/types/inventory";
 
+function formatRouteError(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (error && typeof error === "object") {
+    const errorObject = error as Record<string, unknown>;
+    const parts = [errorObject.message, errorObject.details, errorObject.hint]
+      .filter((value): value is string => typeof value === "string" && Boolean(value.trim()))
+      .map((value) => value.trim());
+
+    if (parts.length) {
+      return parts.join(" | ");
+    }
+  }
+
+  return "Kayit sirasinda bir hata olustu. Supabase tablo yapisini ve env ayarlarini kontrol et.";
+}
+
 export async function GET() {
   const vehicles = await getManualInventory();
 
@@ -37,10 +56,7 @@ export async function PUT(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "Kayit sirasinda bir hata olustu. Supabase tablo yapisini ve env ayarlarini kontrol et.",
+        message: formatRouteError(error),
       },
       { status: 500 },
     );
