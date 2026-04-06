@@ -142,6 +142,10 @@ function saveFileInventory(vehicles: ManualVehicleInput[]) {
   return normalized;
 }
 
+function canUseFileFallback() {
+  return process.env.NODE_ENV !== "production";
+}
+
 export function isSupabaseConfigured() {
   return Boolean(supabaseUrl && supabaseServiceRoleKey);
 }
@@ -355,18 +359,30 @@ export async function getManualInventory(): Promise<Vehicle[]> {
   try {
     return await getSupabaseInventory();
   } catch {
-    return getFileInventory();
+    if (canUseFileFallback()) {
+      return getFileInventory();
+    }
+
+    return [];
   }
 }
 
 export async function saveManualInventory(vehicles: ManualVehicleInput[]) {
   if (!isSupabaseConfigured()) {
+    if (!canUseFileFallback()) {
+      throw new Error("Supabase ayarlari eksik. Production ortaminda dosyaya yazilamaz.");
+    }
+
     return saveFileInventory(vehicles);
   }
 
   try {
     return await saveSupabaseInventory(vehicles);
-  } catch {
-    return saveFileInventory(vehicles);
+  } catch (error) {
+    if (canUseFileFallback()) {
+      return saveFileInventory(vehicles);
+    }
+
+    throw error;
   }
 }
