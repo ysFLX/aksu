@@ -9,6 +9,7 @@ Premium galerici vitrini ve ilan akisi icin kurulan Next.js tabanli altyapi.
 - Tailwind CSS 4
 - Motion
 - Zod
+- Supabase
 
 ## Baslangic
 
@@ -23,6 +24,26 @@ Premium galerici vitrini ve ilan akisi icin kurulan Next.js tabanli altyapi.
 - `src/components`: UI ve sayfa bolumleri
 - `src/lib`: konfigurasyon, veri kaynaklari, entegrasyon katmani
 - `src/types`: tip tanimlari
+- `supabase/vehicles.sql`: admin paneli icin tablo kurulumu
+
+## Admin Panel
+
+Admin paneli `/admin` adresindedir.
+
+Kalici kullanim icin:
+
+1. Supabase projesi olusturun
+2. SQL Editor icinde `supabase/vehicles.sql` dosyasini calistirin
+3. Vercel veya `.env.local` icine su degiskenleri ekleyin:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
+
+Bu degiskenler varsa admin paneli Supabase'e yazar.
+Yoksa gecici olarak `src/lib/data/manual-inventory.json` dosyasina yazar.
 
 ## Sahibinden Entegrasyonu
 

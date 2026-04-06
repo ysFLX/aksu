@@ -60,6 +60,7 @@ function createVehicle(): Vehicle {
 
 export function AdminInventoryPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [backend, setBackend] = useState<"file" | "supabase">("file");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -69,6 +70,7 @@ export function AdminInventoryPage() {
       const response = await fetch("/api/admin/inventory", { cache: "no-store" });
       const json = await response.json();
       setVehicles(json.vehicles ?? []);
+      setBackend(json.backend === "supabase" ? "supabase" : "file");
       setLoading(false);
     }
 
@@ -113,6 +115,7 @@ export function AdminInventoryPage() {
 
     const json = await response.json();
     setVehicles(json.vehicles ?? []);
+    setBackend(json.backend === "supabase" ? "supabase" : "file");
     setSaving(false);
     setMessage("Kaydedildi.");
   }
@@ -129,6 +132,9 @@ export function AdminInventoryPage() {
           <h1 className="mt-4 text-5xl font-semibold">Ilanlari buradan yonet</h1>
           <p className="mt-4 max-w-2xl text-white/68">
             Baslik, fiyat, galeri, etiketler ve ekspertiz verilerini duzenleyip kaydedebilirsin.
+          </p>
+          <p className="mt-3 text-sm text-amber-200/70">
+            Kayit yeri: {backend === "supabase" ? "Supabase" : "Yerel dosya"}
           </p>
         </div>
 
