@@ -118,8 +118,8 @@ export function VehicleExpertise({ expertise, image }: VehicleExpertiseProps) {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[1.75rem] border border-black/6 bg-white/45 p-5">
+        <div className="mt-8 items-start gap-6 lg:grid lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="self-start rounded-[1.75rem] border border-black/6 bg-white/45 p-5">
             <div className={`rounded-[1.5rem] border p-5 ${statusStyles[topStatus].panel}`}>
               <div className="flex items-start justify-between gap-4">
                 <div>

@@ -376,8 +376,17 @@ async function saveSupabaseInventory(vehicles: ManualVehicleInput[]) {
     return (data as VehicleRow[]).sort((a, b) => a.sort_order - b.sort_order).map(mapRowToVehicle);
   }
 
+  const hasDescriptions = rows.some((row) => Boolean(row.description?.trim()));
+
+  if (hasDescriptions) {
+    throw new Error(
+      "Aciklama kaydedilemedi. Supabase tablosunda description kolonu eksik. supabase/vehicles.sql dosyasini tekrar calistir.",
+    );
+  }
+
   const legacyRows = rows.map((row) => {
-    const { description: _discardedDescription, ...rest } = row;
+    const { description, ...rest } = row;
+    void description;
     return rest;
   });
   const legacyInsert = await supabase.from("vehicles").insert(legacyRows).select(legacyVehicleSelectColumns);
