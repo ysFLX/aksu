@@ -84,9 +84,18 @@ export function LandingPage({ vehicles }: LandingPageProps) {
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),transparent_28%,rgba(0,0,0,0.4)_100%)]" />
               <Image
                 src={heroVehicle?.image ?? "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80"}
+                alt=""
+                aria-hidden
+                fill
+                className="scale-110 object-cover blur-2xl opacity-30"
+                priority
+              />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_70%)]" />
+              <Image
+                src={heroVehicle?.image ?? "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80"}
                 alt={heroVehicle?.title ?? "One cikan arac"}
                 fill
-                className="object-cover"
+                className="object-contain object-center p-6"
                 priority
               />
               <div className="absolute inset-x-5 bottom-5 rounded-[1.75rem] border border-white/15 bg-black/45 p-6 backdrop-blur-xl">
