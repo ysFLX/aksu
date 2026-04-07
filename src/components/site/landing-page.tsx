@@ -40,17 +40,21 @@ export function LandingPage({ vehicles }: LandingPageProps) {
               <h1 className="mt-8 text-5xl font-semibold leading-tight text-white md:text-7xl">
                 {siteConfig.hero.title}
               </h1>
-              <p className="mt-6 max-w-xl text-lg leading-8 text-white/72">{siteConfig.hero.description}</p>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-white/85 drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
+                {siteConfig.hero.description}
+              </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <Button asChild size="lg">
-                  <Link href="/ilanlar">
+                <Button asChild size="lg" className="text-neutral-950">
+                  <Link href="/ilanlar" className="text-neutral-950">
                     Araclari Kesfet
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="secondary" size="lg">
-                  <Link href="/hakkimizda">Bizi Taniyin</Link>
+                <Button asChild variant="secondary" size="lg" className="border-white/30 text-white">
+                  <Link href="/hakkimizda" className="text-white">
+                    Bizi Taniyin
+                  </Link>
                 </Button>
               </div>
             </motion.div>
